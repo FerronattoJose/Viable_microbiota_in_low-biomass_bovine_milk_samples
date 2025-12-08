@@ -1,0 +1,129 @@
+#QIIME 2 (https://docs.qiime2.org/2023.9/tutorials/index.html)
+
+#Importing Data into QIIME 2
+qiime tools import \
+  --type 'SampleData[PairedEndSequencesWithQuality]' \
+  --input- .gz \
+  --input-format CasavaOneEightSingleLanePerSampleDirFmt \
+  --output-path demux-paired-end.qza
+
+
+#Removing Primers with Cutadapt
+qiime cutadapt trim-paired \
+--i-demultiplexed-sequences demux.qza \
+--p-front-f TCGTCGGCAGCGTCAGATGTGTATAAGAGACAGCCTACGGGNGGCWGCAG \
+--p-front-r GTCTCGTGGGCTCGGAGATGTGTATAAGAGACAGGACTACHVGGGTATCTAATCC \
+--p-discard-untrimmed \
+--verbose \
+--o-trimmed-sequences trimmed_remove_primers.qza
+
+
+#Extracting Trimmed Reads
+qiime tools extract --input-path trimmed_remove_primers.qza  --output-path extracted_reads
+
+
+#Summarizing the demultiplexed sequences
+qiime demux summarize --i-data demux.qza --o-visualization demux.qzv
+
+
+#Denoising with DADA2 (single-end reads)
+qiime dada2 denoise-single
+--i-demultiplexed-seqs demux.qza
+--p-trim-left 10
+--p-trunc-len 200
+--o-representative-sequences rep-seqs-dada2.qza
+--o-table table-dada2.qza
+--o-denoising-stats stats-dada2.qza
+--p-n-threads 0
+
+
+#Summarizing the feature table
+qiime feature-table summarize \
+--i-table table.qza \
+--o-visualization table.qzv
+
+
+#Viewing representative sequences
+qiime feature-table tabulate-seqs --i-data rep-seqs.qza --o-visualization rep-seqs.qzv
+
+
+#Viewing DADA2 denoising statistics
+qiime metadata tabulate --m-input-file stats-dada2.qza --o-visualization stats-dada2.qzv
+
+
+#Summarizing the feature table with metadata
+qiime feature-table summarize --i-table table.qza --o-visualization table.qzv --m-sample-metadata-file metadata.txt
+
+
+#Building a phylogenetic tree
+qiime phylogeny align-to-tree-mafft-fasttree \
+--i-sequences rep-seqs.qza \
+--o-alignment aligned-rep-seqs.qza \
+--o-masked-alignment masked-aligned-rep-seqs.qza \
+--o-tree unrooted-tree.qza \
+--o-rooted-tree rooted-tree.qza
+
+
+#Taxonomic classification
+qiime feature-classifier classify-sklearn \
+--i-classifier silva-138.2-ssu-nr99-classifier \
+--i-reads rep-seqs.qza \
+--o-classification taxonomy.qza
+
+
+#Transposing the feature table
+qiime feature-table transpose \
+  --i-table table.qza \
+  --o-transposed-feature-table transposed-table.qza
+
+
+#Merging metadata tables
+qiime metadata tabulate \
+  --m-input-file transposed-table.qza \
+  --m-input-file taxonomy.qza \
+  --m-input-file rep-seqs.qza \
+  --o-visualization merged.qzv
+
+
+#Viewing taxonomic classifications
+qiime metadata tabulate --m-input-file taxonomy.qza --o-visualization taxonomy.qzv
+
+
+#Filtering features based on taxonomy
+qiime feature-table filter-features \
+  --i-table table.qza \
+  --m-metadata-file taxonomy.qza \
+  --o-filtered-table id-filtered-table.qza
+
+
+#Collapsing the feature table to genus level
+qiime taxa collapse \
+  --i-table id-filtered-table.qza \
+  --i-taxonomy taxonomy.qza \
+  --p-level 6 \
+  --o-collapsed-table genus_table.qza
+
+
+#Creating a taxonomy bar plot
+qiime taxa barplot \
+  --i-table id-filtered-table.qza \
+  --i-taxonomy taxonomy.qza \
+  --m-metadata-file metadata.txt \
+  --o-visualization taxa-bar-plots.qzv
+
+
+#Exporting feature tables and taxonomy
+qiime tools export --input-path genus_table-l6.qza --output-path exported-feature-table
+qiime tools export --input-path taxonomy.qza --output-path exported-feature-table
+
+
+#Filtering out unwanted taxa
+qiime taxa filter-table \
+  --i-table id-filtered-table.qza \
+  --i-taxonomy taxonomy.qza \
+  --p-exclude Unassigned,d__Archaea,p__Chloroflexi,p__Cyanobacteria,g__Mitochondria \
+  --o-filtered-table filtered_table.qza
+
+
+#Converting BIOM to TSV format
+biom convert -i feature-table.biom -o table.from_biom.txt --to-tsv
