@@ -1,0 +1,88 @@
+#RStudio 
+
+#Reading Data from QIIME 2
+
+#Load the packages 
+library(phyloseq)   # For microbiome analysis
+library(qiime2R)    # To read QIIME 2 files (.qza)
+library(dplyr)      # For data manipulation
+library(tidyverse)  # For general data processing
+
+#Load your data
+SVs <- read_qza("table.qza")
+metadata <- read_q2metadata("metadata.tsv")
+head(metadata) # show top lines of metadata
+
+taxonomy <- read_qza("taxonomy.qza")
+head(taxonomy$data)
+
+#Creating a Phyloseq Object
+physeq <- qza_to_phyloseq(
+  features="table.qza",
+  tree="rooted-tree.qza",
+  taxonomy="taxonomy.qza",
+  metadata = "metadata.tsv"
+)
+physeq
+
+#save the phyloseq object
+saveRDS(physeq, "physeq")
+
+#Extracting Unique Genera
+#Extracts and lists the unique genus-level classifications.
+unique(tax_table(physeq)[,"Genus"])
+
+#Assigns unique ASV names (ASV1, ASV2, etc.) and adds the original ASV sequence as a new column in the taxonomy table.
+taxa_names(physeq) <- paste0("ASV", seq(ntaxa(physeq)))
+tax_table(physeq) <- cbind(tax_table(physeq),
+                           rownames(tax_table(physeq)))
+head(taxa_names(physeq))
+
+
+#Renames the columns of the taxonomy table for clarity.
+colnames(tax_table(physeq)) <- c("Kingdom", "Phylum", "Class", "Order",
+                                 "Family", "Genus", "ASV_SEQ", "ASV_ID")
+
+
+#Filtering Unwanted Taxa
+EU1 <- subset_taxa(physeq, Kingdom == "d__Eukaryota")
+phyloseq_no_euk <- prune_taxa(taxa_names(physeq)[!taxa_names(physeq) %in% taxa_names(EU1)], physeq)
+phyloseq_no_euk
+
+
+NA1 <- subset_taxa(phyloseq_no_euk, Kingdom == "Unassigned")
+NA1 <-  as(tax_table(NA1), "matrix")
+NA1 <- NA1[, 8]
+NA1df <- as.factor(NA1)
+goodTaxa <- setdiff(taxa_names(phyloseq_no_euk), NA1df)
+phyloseq_no_NA <- prune_taxa(goodTaxa, phyloseq_no_euk)
+phyloseq_no_NA
+
+NA2 <- subset_taxa(phyloseq_no_NA, Kingdom == "d__Archaea")
+NA2 <-  as(tax_table(NA2), "matrix")
+NA2 <- NA2[, 8]
+NA2df <- as.factor(NA2)
+goodTaxa <- setdiff(taxa_names(phyloseq_no_NA), NA2df)
+phyloseq_no_Arch <- prune_taxa(goodTaxa, phyloseq_no_NA)
+phyloseq_no_Arch
+
+NA3 <- subset_taxa(phyloseq_no_Arch, Phylum == "Cyanobacteria")
+NA3 <-  as(tax_table(NA3), "matrix")
+NA3 <- NA3[, 8]
+NA3df <- as.factor(NA3)
+goodTaxa <- setdiff(taxa_names(phyloseq_no_Arch), NA3df)
+phyloseq_no_Cyano <- prune_taxa(goodTaxa, phyloseq_no_Arch)
+phyloseq_no_Cyano
+
+
+NA4 <- subset_taxa(phyloseq_no_Cyano, Family == "Mitochondria")
+NA4 <-  as(tax_table(NA4), "matrix")
+NA4 <- NA4[, 8]
+NA4df <- as.factor(NA4)
+goodTaxa <- setdiff(taxa_names(phyloseq_no_Cyano), NA4df)
+phyloseq_no_Unidentified <- prune_taxa(goodTaxa, phyloseq_no_Cyano)
+phyloseq_no_Unidentified
+
+
+#Use this code to check if was removed
+table(tax_table(phyloseq_no_Unidentified)[, "Kingdom"])
