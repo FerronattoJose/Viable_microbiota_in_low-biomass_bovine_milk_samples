@@ -1,0 +1,393 @@
+#Load your packages
+
+library(phyloseq)
+library(decontam)
+library(ggplot2)
+library(writexl)
+
+#DECONTAM - https://benjjneb.github.io/decontam/vignettes/decontam_intro.html
+
+#decontam threshold 0.5
+
+# First one is the Frequency filter
+
+ps5 <- phyloseq_no_after5
+head(sample_data(ps5))
+df <- as.data.frame(sample_data(ps5)) # Put sample_data into a ggplot-friendly data.frame
+df$LibrarySize <- sample_sums(ps5)
+df <- df[order(df$LibrarySize),]
+df$Index <- seq(nrow(df))
+ggplot(data=df, aes(x=Index, y=LibrarySize, color=Sample_or_control)) + geom_point()
+contam.freq5 <- isContaminant(ps5, conc="quant_reading", method="frequency", threshold=0.5)
+## Create a temporary copy of contam.freq with shorter rownames for easy display
+temp_contam.freq5 <- contam.freq5
+
+# change the rownames to something managable
+rownames(temp_contam.freq5) <- paste0("SV",seq(nrow(temp_contam.freq5)))
+
+# display the first 10 rows of the data frame
+print(head(temp_contam.freq5))
+
+set.seed(100)
+plot_frequency(ps5, taxa_names(ps5)[sample(which(contam.freq5$contaminant),1)], conc="quant_reading")
+
+
+## Second one is the Prevalence filter - using the NEG1 (DNA extraction control)
+
+ps5.1 <- phyloseq_no_after5
+head(sample_data(ps5.1))
+df <- as.data.frame(sample_data(ps5.1)) # Put sample_data into a ggplot-friendly data.frame
+df$LibrarySize <- sample_sums(ps5.1)
+df <- df[order(df$LibrarySize),]
+df$Index <- seq(nrow(df))
+ggplot(data=df, aes(x=Index, y=LibrarySize, color=Sample_or_control)) + geom_point()
+sample_data(ps5.1)$is.neg <- sample_data(ps5.1)$Sample_or_control == "NEG1"
+contamdf.prev <- isContaminant(ps5.1, method="prevalence", neg="is.neg")
+table(contamdf.prev$contaminant)
+head(which(contamdf.prev$contaminant))
+contamdf.prev05 <- isContaminant(ps5.1, method="prevalence", neg="is.neg", threshold=0.5)
+table(contamdf.prev05$contaminant)
+ps5.1.pa <- transform_sample_counts(ps5.1, function(abund) 1*(abund>0))
+ps5.1.pa.neg <- prune_samples(sample_data(ps5.1.pa)$Sample_or_control == "NEG1", ps5.1.pa)
+ps5.1.pa.pos <- prune_samples(sample_data(ps5.1.pa)$Sample_or_control == "True_Sample", ps5.1.pa)
+df.pa <- data.frame(pa.pos=taxa_sums(ps5.1.pa.pos), pa.neg=taxa_sums(ps5.1.pa.neg),
+                    contaminant=contamdf.prev$contaminant)
+ggplot(data=df.pa, aes(x=pa.neg, y=pa.pos, color=contaminant)) + geom_point() +
+  xlab("Prevalence (NEG1)") + ylab("Prevalence (True_Sample)")
+
+
+## Third one is the Prevalence filter - using the NEG2 (Environment control)
+
+ps5.2 <- phyloseq_no_after5
+head(sample_data(ps5.2))
+df <- as.data.frame(sample_data(ps5.2)) # Put sample_data into a ggplot-friendly data.frame
+df$LibrarySize <- sample_sums(ps5.2)
+df <- df[order(df$LibrarySize),]
+df$Index <- seq(nrow(df))
+ggplot(data=df, aes(x=Index, y=LibrarySize, color=Sample_or_control)) + geom_point()
+sample_data(ps5.2)$is.neg <- sample_data(ps5.2)$Sample_or_control == "NEG2"
+contamdf.prev <- isContaminant(ps5.2, method="prevalence", neg="is.neg")
+table(contamdf.prev$contaminant)
+head(which(contamdf.prev$contaminant))
+contamdf.prev05.2 <- isContaminant(ps5.2, method="prevalence", neg="is.neg", threshold=0.5)
+table(contamdf.prev05.2$contaminant)
+ps5.2.pa <- transform_sample_counts(ps5.2, function(abund) 1*(abund>0))
+ps5.2.pa.neg <- prune_samples(sample_data(ps5.2.pa)$Sample_or_control == "NEG2", ps5.2.pa)
+ps5.2.pa.pos <- prune_samples(sample_data(ps5.2.pa)$Sample_or_control == "True_Sample", ps5.2.pa)
+df.pa <- data.frame(pa.pos=taxa_sums(ps5.2.pa.pos), pa.neg=taxa_sums(ps5.2.pa.neg),
+                    contaminant=contamdf.prev$contaminant)
+ggplot(data=df.pa, aes(x=pa.neg, y=pa.pos, color=contaminant)) + geom_point() +
+  xlab("Prevalence (NEG2)") + ylab("Prevalence (True_Sample)")
+
+
+#Write the tables
+
+#Load the package for it
+
+library("writexl")
+
+write_xlsx(contamdf.prev05,"decontamination05_ASV.xlsx", col_names = TRUE,
+           format_headers = TRUE)
+
+write_xlsx(contamdf.prev05.2,"decontamination05.2_ASV.xlsx", col_names = TRUE,
+           format_headers = TRUE)
+
+write_xlsx(contam.freq5,"decontamination05_ASV.freq.xlsx", col_names = TRUE,
+           format_headers = TRUE)
+
+write.table(contamdf.prev05, "decontamination_05_.txt", sep="\t",
+            quote = FALSE, col.names=NA)
+
+write.table(contamdf.prev05.2, "decontamination_05.2_.txt", sep="\t",
+            quote = FALSE, col.names=NA)
+
+write.table(contam.freq5, "decontamination.freq_05_.txt", sep="\t",
+            quote = FALSE, col.names=NA)
+
+unique(tax_table(phyloseq_no_after5)[,"ASV_ID"] )
+
+write.table(tax_table(phyloseq_no_after5),
+            "trim_tax_table_ASVID.txt", sep="\t",
+            quote = FALSE, col.names=NA)
+write.table(t(otu_table(phyloseq_no_after5)),
+            "trim_seq_table_ASVID.txt", sep="\t",
+            quote = FALSE, col.names=NA)
+
+
+
+
+#decontam threshold 0.6
+
+# First one is the Frequency filter
+
+ps6 <- phyloseq_no_after6
+head(sample_data(ps6))
+df <- as.data.frame(sample_data(ps6)) # Put sample_data into a ggplot-friendly data.frame
+df$LibrarySize <- sample_sums(ps6)
+df <- df[order(df$LibrarySize),]
+df$Index <- seq(nrow(df))
+ggplot(data=df, aes(x=Index, y=LibrarySize, color=Sample_or_control)) + geom_point()
+contam.freq6 <- isContaminant(ps6, conc="quant_reading", method="frequency", threshold=0.6)
+## Create a temporary copy of contam.freq with shorter rownames for easy display
+temp_contam.freq6 <- contam.freq6
+
+# change the rownames to something managable
+rownames(temp_contam.freq6) <- paste0("SV",seq(nrow(temp_contam.freq6)))
+
+# display the first 10 rows of the data frame
+print(head(temp_contam.freq6))
+
+set.seed(100)
+plot_frequency(ps6, taxa_names(ps6)[sample(which(contam.freq6$contaminant),1)], conc="quant_reading")
+
+
+## Second one is the Prevalence filter - using the NEG1 (DNA extraction control)
+
+ps6.1 <- phyloseq_no_after6
+head(sample_data(ps6.1))
+df <- as.data.frame(sample_data(ps6.1)) # Put sample_data into a ggplot-friendly data.frame
+df$LibrarySize <- sample_sums(ps6.1)
+df <- df[order(df$LibrarySize),]
+df$Index <- seq(nrow(df))
+ggplot(data=df, aes(x=Index, y=LibrarySize, color=Sample_or_control)) + geom_point()
+sample_data(ps6.1)$is.neg <- sample_data(ps6.1)$Sample_or_control == "NEG1"
+contamdf.prev <- isContaminant(ps6.1, method="prevalence", neg="is.neg")
+table(contamdf.prev$contaminant)
+head(which(contamdf.prev$contaminant))
+contamdf.prev06 <- isContaminant(ps6.1, method="prevalence", neg="is.neg", threshold=0.6)
+table(contamdf.prev06$contaminant)
+ps6.1.pa <- transform_sample_counts(ps6.1, function(abund) 1*(abund>0))
+ps6.1.pa.neg <- prune_samples(sample_data(ps6.1.pa)$Sample_or_control == "NEG1", ps6.1.pa)
+ps6.1.pa.pos <- prune_samples(sample_data(ps6.1.pa)$Sample_or_control == "True_Sample", ps6.1.pa)
+df.pa <- data.frame(pa.pos=taxa_sums(ps6.1.pa.pos), pa.neg=taxa_sums(ps6.1.pa.neg),
+                    contaminant=contamdf.prev$contaminant)
+ggplot(data=df.pa, aes(x=pa.neg, y=pa.pos, color=contaminant)) + geom_point() +
+  xlab("Prevalence (NEG1)") + ylab("Prevalence (True_Sample)")
+
+
+## Third one is the Prevalence filter - using the NEG2 (Environment control)
+
+ps6.2 <- phyloseq_no_after6
+head(sample_data(ps6.2))
+df <- as.data.frame(sample_data(ps6.2)) # Put sample_data into a ggplot-friendly data.frame
+df$LibrarySize <- sample_sums(ps6.2)
+df <- df[order(df$LibrarySize),]
+df$Index <- seq(nrow(df))
+ggplot(data=df, aes(x=Index, y=LibrarySize, color=Sample_or_control)) + geom_point()
+sample_data(ps6.2)$is.neg <- sample_data(ps6.2)$Sample_or_control == "NEG2"
+contamdf.prev <- isContaminant(ps6.2, method="prevalence", neg="is.neg")
+table(contamdf.prev$contaminant)
+head(which(contamdf.prev$contaminant))
+contamdf.prev06.2 <- isContaminant(ps6.2, method="prevalence", neg="is.neg", threshold=0.6)
+table(contamdf.prev06.2$contaminant)
+ps6.2.pa <- transform_sample_counts(ps6.2, function(abund) 1*(abund>0))
+ps6.2.pa.neg <- prune_samples(sample_data(ps6.2.pa)$Sample_or_control == "NEG2", ps6.2.pa)
+ps6.2.pa.pos <- prune_samples(sample_data(ps6.2.pa)$Sample_or_control == "True_Sample", ps6.2.pa)
+df.pa <- data.frame(pa.pos=taxa_sums(ps6.2.pa.pos), pa.neg=taxa_sums(ps6.2.pa.neg),
+                    contaminant=contamdf.prev$contaminant)
+ggplot(data=df.pa, aes(x=pa.neg, y=pa.pos, color=contaminant)) + geom_point() +
+  xlab("Prevalence (NEG2)") + ylab("Prevalence (True_Sample)")
+
+
+
+#Write the tables
+
+#Load the package for it
+
+library("writexl")
+
+
+write_xlsx(contamdf.prev06,"decontamination06_ASV.xlsx", col_names = TRUE,
+           format_headers = TRUE)
+
+write_xlsx(contamdf.prev06.2,"decontamination06.2_ASV.xlsx", col_names = TRUE,
+           format_headers = TRUE)
+
+write_xlsx(contam.freq6,"decontamination06_ASV.freq.xlsx", col_names = TRUE,
+           format_headers = TRUE)
+
+write.table(contamdf.prev06, "decontamination_06_.txt", sep="\t",
+            quote = FALSE, col.names=NA)
+
+write.table(contamdf.prev06.2, "decontamination_06.2_.txt", sep="\t",
+            quote = FALSE, col.names=NA)
+
+write.table(contam.freq6, "decontamination.freq_06_.txt", sep="\t",
+            quote = FALSE, col.names=NA)
+
+unique(tax_table(phyloseq_no_after6)[,"ASV_ID"] )
+
+write.table(tax_table(phyloseq_no_after6),
+            "trim_tax_table_ASVID.txt", sep="\t",
+            quote = FALSE, col.names=NA)
+write.table(t(otu_table(phyloseq_no_after6)),
+            "trim_seq_table_ASVID.txt", sep="\t",
+            quote = FALSE, col.names=NA)
+
+
+
+
+#decontam threshold 0.8
+
+# First one is the Frequency filter
+
+ps8 <- phyloseq_no_after8
+head(sample_data(ps8))
+df <- as.data.frame(sample_data(ps8)) # Put sample_data into a ggplot-friendly data.frame
+df$LibrarySize <- sample_sums(ps8)
+df <- df[order(df$LibrarySize),]
+df$Index <- seq(nrow(df))
+ggplot(data=df, aes(x=Index, y=LibrarySize, color=Sample_or_control)) + geom_point()
+contam.freq8 <- isContaminant(ps8, conc="quant_reading", method="frequency", threshold=0.8)
+## Create a temporary copy of contam.freq with shorter rownames for easy display
+temp_contam.freq8 <- contam.freq8
+
+# change the rownames to something managable
+rownames(temp_contam.freq8) <- paste0("SV",seq(nrow(temp_contam.freq8)))
+
+# display the first 10 rows of the data frame
+print(head(temp_contam.freq8))
+
+set.seed(100)
+plot_frequency(ps8, taxa_names(ps8)[sample(which(contam.freq8$contaminant),1)], conc="quant_reading")
+
+
+## Second one is the Prevalence filter - using the NEG1 (DNA extraction control)
+
+ps8.1 <- phyloseq_no_after8
+head(sample_data(ps8.1))
+df <- as.data.frame(sample_data(ps8.1)) # Put sample_data into a ggplot-friendly data.frame
+df$LibrarySize <- sample_sums(ps8.1)
+df <- df[order(df$LibrarySize),]
+df$Index <- seq(nrow(df))
+ggplot(data=df, aes(x=Index, y=LibrarySize, color=Sample_or_control)) + geom_point()
+sample_data(ps8.1)$is.neg <- sample_data(ps8.1)$Sample_or_control == "NEG1"
+contamdf.prev <- isContaminant(ps8.1, method="prevalence", neg="is.neg")
+table(contamdf.prev$contaminant)
+head(which(contamdf.prev$contaminant))
+contamdf.prev08 <- isContaminant(ps8.1, method="prevalence", neg="is.neg", threshold=0.8)
+table(contamdf.prev08$contaminant)
+ps8.1.pa <- transform_sample_counts(ps8.1, function(abund) 1*(abund>0))
+ps8.1.pa.neg <- prune_samples(sample_data(ps8.1.pa)$Sample_or_control == "NEG1", ps8.1.pa)
+ps8.1.pa.pos <- prune_samples(sample_data(ps8.1.pa)$Sample_or_control == "True_Sample", ps8.1.pa)
+df.pa <- data.frame(pa8.1.pos=taxa_sums(ps8.1.pa.pos), pa.neg=taxa_sums(ps8.1.pa.neg),
+                    contaminant=contamdf.prev$contaminant)
+ggplot(data=df.pa, aes(x=pa.neg, y=pa8.1.pos, color=contaminant)) + geom_point() +
+  xlab("Prevalence (NEG1)") + ylab("Prevalence (True_Sample)")
+
+
+## Third one is the Prevalence filter - using the NEG2 (Environment control)
+
+ps8.2 <- phyloseq_no_after8
+head(sample_data(ps8.2))
+df <- as.data.frame(sample_data(ps8.2)) # Put sample_data into a ggplot-friendly data.frame
+df$LibrarySize <- sample_sums(ps8.2)
+df <- df[order(df$LibrarySize),]
+df$Index <- seq(nrow(df))
+ggplot(data=df, aes(x=Index, y=LibrarySize, color=Sample_or_control)) + geom_point()
+sample_data(ps8.2)$is.neg <- sample_data(ps8.2)$Sample_or_control == "NEG2"
+contamdf.prev <- isContaminant(ps8.2, method="prevalence", neg="is.neg")
+table(contamdf.prev$contaminant)
+head(which(contamdf.prev$contaminant))
+contamdf.prev08.2 <- isContaminant(ps8.2, method="prevalence", neg="is.neg", threshold=0.8)
+table(contamdf.prev08.2$contaminant)
+ps8.2.pa <- transform_sample_counts(ps8.2, function(abund) 1*(abund>0))
+ps8.2.pa.neg <- prune_samples(sample_data(ps8.2.pa)$Sample_or_control == "NEG2", ps8.2.pa)
+ps8.2.pa.pos <- prune_samples(sample_data(ps8.2.pa)$Sample_or_control == "True_Sample", ps8.2.pa)
+df.pa <- data.frame(pa8.2.pos=taxa_sums(ps8.2.pa.pos), pa.neg=taxa_sums(ps8.2.pa.neg),
+                    contaminant=contamdf.prev$contaminant)
+ggplot(data=df.pa, aes(x=pa.neg, y=pa8.2.pos, color=contaminant)) + geom_point() +
+  xlab("Prevalence (NEG2)") + ylab("Prevalence (True_Sample)")
+
+
+
+#Write the tables
+
+#Load the package for it
+
+library("writexl")
+
+
+write_xlsx(contamdf.prev08,"decontamination08_ASV.xlsx", col_names = TRUE,
+           format_headers = TRUE)
+
+write_xlsx(contamdf.prev08.2,"decontamination08.2_ASV.xlsx", col_names = TRUE,
+           format_headers = TRUE)
+
+write_xlsx(contam.freq8,"decontamination08_ASV.freq.xlsx", col_names = TRUE,
+           format_headers = TRUE)
+
+write.table(contamdf.prev08, "decontamination_08_.txt", sep="\t",
+            quote = FALSE, col.names=NA)
+
+write.table(contamdf.prev08.2, "decontamination_08.2_.txt", sep="\t",
+            quote = FALSE, col.names=NA)
+
+write.table(contam.freq8, "decontamination.freq_08_.txt", sep="\t",
+            quote = FALSE, col.names=NA)
+
+unique(tax_table(phyloseq_no_after8)[,"ASV_ID"] )
+
+write.table(tax_table(phyloseq_no_after8),
+            "trim_tax_table_ASVID.txt", sep="\t",
+            quote = FALSE, col.names=NA)
+write.table(t(otu_table(phyloseq_no_after8)),
+            "trim_seq_table_ASVID.txt", sep="\t",
+            quote = FALSE, col.names=NA)
+
+
+
+
+#REMOVE THE CONTAMINANTS
+
+# THRESHOLD 0.5 - CREATE A PHYLOSEQ ONLY WITH THE TRUE_SAMPLE AND WITHOUT CONTAMINANTS
+
+goodTaxa <- setdiff(taxa_names(phyloseq_no_after5), badTaxa.5)
+phyloseq_no_after5
+phyloseq_no_after5 <- prune_taxa(goodTaxa, phyloseq_no_after5)
+phyloseq_no_after5
+phyloseq_after5_withoutneg = subset_samples(phyloseq_no_after5, Sample_or_control %in% c("True_Sample"))
+phyloseq_after5_withoutneg
+
+#Removed 254 ASVs
+
+saveRDS(phyloseq_no_after5, "phyloseqafter.5_SILVA_138.2")
+
+
+# THRESHOLD 0.6 - CREATE A PHYLOSEQ ONLY WITH THE TRUE_SAMPLE AND WITHOUT CONTAMINANTS
+
+goodTaxa <- setdiff(taxa_names(phyloseq_no_after6), badTaxa.6)
+phyloseq_no_after6
+phyloseq_no_after6 <- prune_taxa(goodTaxa, phyloseq_no_after6)
+phyloseq_no_after6
+phyloseq_after6_withoutneg = subset_samples(phyloseq_no_after6, Sample_or_control %in% c("True_Sample"))
+phyloseq_after6_withoutneg
+
+#Removed 367 ASVs
+
+saveRDS(phyloseq_no_after6, "phyloseqafter.6_SILVA_138.2")
+
+
+# THRESHOLD 0.8 - CREATE A PHYLOSEQ ONLY WITH THE TRUE_SAMPLE AND WITHOUT CONTAMINANTS
+
+remove_contaminants <- function(phyloseq_object, bad_taxa) {
+  good_taxa <- setdiff(taxa_names(phyloseq_object), bad_taxa)
+  return(prune_taxa(good_taxa, phyloseq_object))
+}
+
+phyloseq_no_after8 <- remove_contaminants(phyloseq_no_after8, badTaxa.8)
+phyloseq_no_after8 <- remove_contaminants(phyloseq_no_after8, badTaxa.8.1)
+print(phyloseq_no_after8)
+phyloseq_after8_withoutneg = subset_samples(phyloseq_no_after8, Sample_or_control %in% c("True_Sample"))
+phyloseq_after8_withoutneg
+
+#Removed 386 ASVs
+
+saveRDS(phyloseq_no_after8, "phyloseqafter.8_SILVA_138.2")
+
+
+#BEFORE DECONTAM - CREATE A PHYLOSEQ ONLY WITH THE TRUE_SAMPLE
+
+phyloseq_before_withoutneg = subset_samples(phyloseq_no_beforedecontam, Sample_or_control %in% c("True_Sample"))
+phyloseq_before_withoutneg
+
