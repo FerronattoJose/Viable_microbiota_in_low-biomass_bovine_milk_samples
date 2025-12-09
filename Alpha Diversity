@@ -1,0 +1,428 @@
+#Load your packages
+
+library(microbiome)
+library(phyloseq)
+library(ggpubr)
+library(dplyr)
+library(ggplot2)
+
+#BEFORE DECONTAM
+
+reads_sample_physeq <- readcount(phyloseq_before_withoutneg)
+
+sort(reads_sample_physeq[1:400])
+
+ps1 <- phyloseq_before_withoutneg
+
+tab <- microbiome::alpha(ps1, index = c("Chao1", "Shannon", "Observed"))
+ps1.meta <- meta(ps1)
+ps1.meta$Shannon <- tab$diversity_shannon
+ps1.meta$chao1 <- tab$chao1
+
+
+# Set order of groups
+ps1.meta$Group <- factor(ps1.meta$Group, levels = c("Viable", "Total"))
+
+
+# Shannon index
+
+p.shannon.b <- ggplot(ps1.meta, aes(x = Group, y = Shannon, fill = Group)) +
+  geom_boxplot(alpha = 0.6, outlier.shape = NA) +
+  geom_jitter(aes(shape = Group), width = 0.2, alpha = 0.5, color = "black", size = 2) +
+  scale_fill_manual(values = c("Viable" = "coral", "Total" = "steelblue")) +
+  scale_shape_manual(values = c("Viable" = 21, "Total" = 24)) +
+  scale_y_continuous(limits = c(0, 6)) + 
+  labs(y = "Shannon diversity", x = NULL) +
+  theme_minimal() +
+  theme(
+    panel.background = element_blank(),
+    plot.background = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
+    axis.text.x = element_blank(),   # remove text
+    axis.ticks.x = element_blank(),  # remove ticks
+    axis.title.x = element_blank(),  # remove axis title
+    axis.text = element_text(size = 12),
+    axis.title = element_text(size = 16),
+    legend.text = element_text(size = 12),
+    legend.title = element_text(size = 16)
+  )
+
+
+p.shannon.b
+
+
+stat <- levels(ps1.meta$Group)
+stat.pairs <- combn(seq_along(stat), 2, simplify = FALSE, FUN = function(i)stat[i])
+print(stat.pairs)
+
+p.shannon.b <- p.shannon.b + 
+  stat_compare_means(
+    comparisons = stat.pairs,
+    size = 4,
+    label = "p.format",
+    parse = TRUE  
+  )
+
+print(p.shannon.b)
+
+
+
+
+
+# Chao index
+
+
+p.chao.b <- ggplot(ps1.meta, aes(x = Group, y = chao1, fill = Group)) +
+  geom_boxplot(alpha = 0.6, outlier.shape = NA) +
+  geom_jitter(aes(shape = Group), width = 0.2, alpha = 0.5, color = "black", size = 2) +
+  scale_fill_manual(values = c("Viable" = "coral", "Total" = "steelblue")) +
+  scale_shape_manual(values = c("Viable" = 21, "Total" = 24)) +
+  scale_y_continuous(limits = c(0, 500)) + 
+  labs(y = "Chao1 diversity", x = NULL) +
+  theme_minimal() +
+  theme(
+    panel.background = element_blank(),
+    plot.background = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
+    axis.text.x = element_blank(),   # remove textos do eixo X
+    axis.ticks.x = element_blank(),  # remove ticks do eixo X
+    axis.title.x = element_blank(),  # remove título do eixo X
+    axis.text = element_text(size = 12),
+    axis.title = element_text(size = 16),
+    legend.text = element_text(size = 12),
+    legend.title = element_text(size = 16)
+  )
+
+
+print(p.chao.b)
+p.chao.b <- p.chao.b + stat_compare_means(comparisons = stat.pairs) 
+
+print(p.chao.b)
+
+
+
+
+
+#THRESHOLD 0.5
+
+reads_sample_physeq <- readcount(phyloseq_after5_withoutneg)
+
+
+sort(reads_sample_physeq[1:400])
+
+
+ps1 <- phyloseq_after5_withoutneg
+
+
+tab <- microbiome::alpha(ps1, index = c("Chao1", "Shannon", "Observed"))
+ps15.meta <- meta(ps1)
+ps15.meta$Shannon <- tab$diversity_shannon
+ps15.meta$chao1 <- tab$chao1
+
+
+
+# Set order of groups
+ps15.meta$Group <- factor(ps15.meta$Group, levels = c("Viable", "Total"))
+
+
+# Shannon index
+
+p.shannon.5 <- ggplot(ps15.meta, aes(x = Group, y = Shannon, fill = Group)) +
+  geom_boxplot(alpha = 0.6, outlier.shape = NA) +
+  geom_jitter(aes(shape = Group), width = 0.2, alpha = 0.5, color = "black", size = 2) +
+  scale_fill_manual(values = c("Viable" = "coral", "Total" = "steelblue")) +
+  scale_shape_manual(values = c("Viable" = 21, "Total" = 24)) +
+  scale_y_continuous(limits = c(0, 6)) + 
+  labs(y = "Shannon diversity", x = NULL) +
+  theme_minimal() +
+  theme(
+    panel.background = element_blank(),
+    plot.background = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
+    axis.text.x = element_blank(),   # remove text
+    axis.ticks.x = element_blank(),  # remove ticks
+    axis.title.x = element_blank(),  # remove axis title
+    axis.text = element_text(size = 12),
+    axis.title = element_text(size = 16),
+    legend.text = element_text(size = 12),
+    legend.title = element_text(size = 16)
+  )
+
+
+print(p.shannon.5)
+
+
+stat <- levels(ps15.meta$Group)
+stat.pairs <- combn(seq_along(stat), 2, simplify = FALSE, FUN = function(i)stat[i])
+print(stat.pairs)
+
+p.shannon.5 <- p.shannon.5 + stat_compare_means(comparisons = stat.pairs, size = 4) 
+
+
+print(p.shannon.5)
+
+
+
+# Chao index
+
+
+p.chao.5 <- ggplot(ps15.meta, aes(x = Group, y = chao1, fill = Group)) +
+  geom_boxplot(alpha = 0.6, outlier.shape = NA) +
+  geom_jitter(aes(shape = Group), width = 0.2, alpha = 0.5, color = "black", size = 2) +
+  scale_fill_manual(values = c("Viable" = "coral", "Total" = "steelblue")) +
+  scale_shape_manual(values = c("Viable" = 21, "Total" = 24)) +
+  scale_y_continuous(limits = c(0, 500)) + 
+  labs(y = "Chao1 diversity", x = NULL) +
+  theme_minimal() +
+  theme(
+    panel.background = element_blank(),
+    plot.background = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
+    axis.text.x = element_blank(),   # remove textos do eixo X
+    axis.ticks.x = element_blank(),  # remove ticks do eixo X
+    axis.title.x = element_blank(),  # remove título do eixo X
+    axis.text = element_text(size = 12),
+    axis.title = element_text(size = 16),
+    legend.text = element_text(size = 12),
+    legend.title = element_text(size = 16)
+  )
+
+
+print(p.chao.5)
+
+p.chao.5 <- p.chao.5 + stat_compare_means(comparisons = stat.pairs) 
+print(p.chao.5)
+
+
+
+
+#THRESHOLD 0.6
+
+
+reads_sample_physeq <- readcount(phyloseq_after6_withoutneg)
+
+sort(reads_sample_physeq[1:400])
+
+
+ps1 <- phyloseq_after6_withoutneg
+
+
+tab <- microbiome::alpha(ps1, index = c("Chao1", "Shannon", "Observed"))
+ps16.meta <- meta(ps1)
+ps16.meta$Shannon <- tab$diversity_shannon
+ps16.meta$chao1 <- tab$chao1
+
+
+# Set order of groups
+ps16.meta$Group <- factor(ps16.meta$Group, levels = c("Viable", "Total"))
+
+
+# Shannon index
+
+p.shannon.6 <- ggplot(ps16.meta, aes(x = Group, y = Shannon, fill = Group)) +
+  geom_boxplot(alpha = 0.6, outlier.shape = NA) +
+  geom_jitter(aes(shape = Group), width = 0.2, alpha = 0.5, color = "black", size = 2) +
+  scale_fill_manual(values = c("Viable" = "coral", "Total" = "steelblue")) +
+  scale_shape_manual(values = c("Viable" = 21, "Total" = 24)) +
+  scale_y_continuous(limits = c(0, 6)) + 
+  labs(y = "Shannon diversity", x = NULL) +
+  theme_minimal() +
+  theme(
+    panel.background = element_blank(),
+    plot.background = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
+    axis.text.x = element_blank(),   # remove text
+    axis.ticks.x = element_blank(),  # remove ticks
+    axis.title.x = element_blank(),  # remove axis title
+    axis.text = element_text(size = 12),
+    axis.title = element_text(size = 16),
+    legend.text = element_text(size = 12),
+    legend.title = element_text(size = 16)
+  )
+
+
+print(p.shannon.6)
+
+
+stat <- levels(ps16.meta$Group)
+stat.pairs <- combn(seq_along(stat), 2, simplify = FALSE, FUN = function(i)stat[i])
+print(stat.pairs)
+
+p.shannon.6 <- p.shannon.6 + stat_compare_means(comparisons = stat.pairs, size = 4) 
+print(p.shannon.6)
+
+
+
+# Chao index
+
+
+p.chao.6 <- ggplot(ps16.meta, aes(x = Group, y = chao1, fill = Group)) +
+  geom_boxplot(alpha = 0.6, outlier.shape = NA) +
+  geom_jitter(aes(shape = Group), width = 0.2, alpha = 0.5, color = "black", size = 2) +
+  scale_fill_manual(values = c("Viable" = "coral", "Total" = "steelblue")) +
+  scale_shape_manual(values = c("Viable" = 21, "Total" = 24)) +
+  scale_y_continuous(limits = c(0, 500)) + 
+  labs(y = "Chao1 diversity", x = NULL) +
+  theme_minimal() +
+  theme(
+    panel.background = element_blank(),
+    plot.background = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
+    axis.text.x = element_blank(),   # remove textos do eixo X
+    axis.ticks.x = element_blank(),  # remove ticks do eixo X
+    axis.title.x = element_blank(),  # remove título do eixo X
+    axis.text = element_text(size = 12),
+    axis.title = element_text(size = 16),
+    legend.text = element_text(size = 12),
+    legend.title = element_text(size = 16)
+  )
+
+
+print(p.chao.6)
+
+p.chao.6 <- p.chao.6 + stat_compare_means(comparisons = stat.pairs) 
+print(p.chao.6)
+
+
+
+
+#THRESHOLD 0.8
+
+
+reads_sample_physeq <- readcount(phyloseq_after8_withoutneg)
+
+
+sort(reads_sample_physeq[1:400])
+
+ps1 <- phyloseq_after8_withoutneg
+
+
+tab <- microbiome::alpha(ps1, index = c("Chao1", "Shannon", "Observed"))
+ps18.meta <- meta(ps1)
+ps18.meta$Shannon <- tab$diversity_shannon
+ps18.meta$chao1 <- tab$chao1
+
+
+
+# Set order of groups
+ps18.meta$Group <- factor(ps18.meta$Group, levels = c("Viable", "Total"))
+
+
+# Shannon index
+
+p.shannon.8 <- ggplot(ps18.meta, aes(x = Group, y = Shannon, fill = Group)) +
+  geom_boxplot(alpha = 0.6, outlier.shape = NA) +
+  geom_jitter(aes(shape = Group), width = 0.2, alpha = 0.5, color = "black", size = 2) +
+  scale_fill_manual(values = c("Viable" = "coral", "Total" = "steelblue")) +
+  scale_shape_manual(values = c("Viable" = 21, "Total" = 24)) +
+  scale_y_continuous(limits = c(0, 6)) + 
+  labs(y = "Shannon diversity", x = NULL) +
+  theme_minimal() +
+  theme(
+    panel.background = element_blank(),
+    plot.background = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
+    axis.text.x = element_blank(),   # remove textos do eixo X
+    axis.ticks.x = element_blank(),  # remove ticks do eixo X
+    axis.title.x = element_blank(),  # remove título do eixo X
+    axis.text = element_text(size = 12),
+    axis.title = element_text(size = 16),
+    legend.text = element_text(size = 12),
+    legend.title = element_text(size = 16)
+  )
+
+
+p.shannon.8
+
+
+stat <- levels(ps18.meta$Group)
+stat.pairs <- combn(seq_along(stat), 2, simplify = FALSE, FUN = function(i)stat[i])
+print(stat.pairs)
+
+p.shannon.8 <- p.shannon.8 + 
+  stat_compare_means(
+    comparisons = stat.pairs,
+    size = 4,
+    label = "p.format",
+    parse = TRUE  
+  )
+
+print(p.shannon.8)
+
+
+
+
+# Chao index
+
+p.chao.8 <- ggplot(ps18.meta, aes(x = Group, y = chao1, fill = Group)) +
+  geom_boxplot(alpha = 0.6, outlier.shape = NA) +
+  geom_jitter(aes(shape = Group), width = 0.2, alpha = 0.5, color = "black", size = 2) +
+  scale_fill_manual(values = c("Viable" = "coral", "Total" = "steelblue")) +
+  scale_shape_manual(values = c("Viable" = 21, "Total" = 24)) +
+  scale_y_continuous(limits = c(0, 500)) + 
+  labs(y = "Chao1 diversity", x = NULL) +
+  theme_minimal() +
+  theme(
+    panel.background = element_blank(),
+    plot.background = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
+    axis.text.x = element_blank(),   # remove textos do eixo X
+    axis.ticks.x = element_blank(),  # remove ticks do eixo X
+    axis.title.x = element_blank(),  # remove título do eixo X
+    axis.text = element_text(size = 12),
+    axis.title = element_text(size = 16),
+    legend.text = element_text(size = 12),
+    legend.title = element_text(size = 16)
+  )
+
+
+
+print(p.chao.8)
+p.chao.8 <- p.chao.8 + stat_compare_means(comparisons = stat.pairs) 
+
+print(p.chao.8)
+
+
+
+#Combine the graphs - BEFORE AND THRESHOLD 0.8
+
+combined_plot_div <- ggarrange(
+  p.shannon.b, p.shannon.8,
+  p.chao.b,    p.chao.8,
+  ncol = 2, nrow = 2,
+  labels = c("A", "B", "C", "D"),
+  common.legend = FALSE,
+  legend = "right"
+)
+
+combined_plot_div
+
+#Combine the graphs - THRESHOLD 0.5 AND THRESHOLD 0.6
+
+combined_plot_di <- ggarrange(
+  p.shannon.5, p.shannon.6,
+  p.chao.5,    p.chao.6,
+  ncol = 2, nrow = 2,
+  labels = c("A", "B", "C", "D"),
+  common.legend = FALSE,
+  legend = "right"
+)
+
+combined_plot_di
+
