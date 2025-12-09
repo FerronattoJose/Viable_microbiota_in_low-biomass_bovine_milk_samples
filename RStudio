@@ -89,3 +89,55 @@ phyloseq_no_Unidentified
 
 #Use this code to check if was removed
 table(tax_table(phyloseq_no_Unidentified)[, "Kingdom"])
+
+
+#Prepare the phyloseqs - before, after threshold 0.5, 0.6 and 0.8
+
+#before decontam
+phyloseq_no_beforedecontam <- subset_taxa(phyloseq_no_Unidentified, !is.na(Phylum))
+phyloseq_no_beforedecontam
+
+
+tax_table(phyloseq_no_beforedecontam)[tax_table(phyloseq_no_beforedecontam) == "d__Bacteria"] <- "Bacteria"
+phyloseq::tax_table(phyloseq_no_beforedecontam)[1:3,1:3]
+unique(tax_table(phyloseq_no_beforedecontam)[,"ASV_ID"] )
+
+
+write.table(tax_table(phyloseq_no_beforedecontam),
+            "trim_tax_table_ASV_before_Decontam.txt", sep="\t",
+            quote = FALSE, col.names=NA)
+write.table(t(otu_table(phyloseq_no_beforedecontam)),
+            "trim_seq_table_ASV_before_Decontam.txt", sep="\t",
+            quote = FALSE, col.names=NA)
+
+
+
+
+#after decontam 0.5
+phyloseq_no_after5 <- subset_taxa(phyloseq_no_Unidentified, !is.na(Phylum))
+phyloseq_no_after5
+
+tax_table(phyloseq_no_after5)[tax_table(phyloseq_no_after5) == "d__Bacteria"] <- "Bacteria"
+phyloseq::tax_table(phyloseq_no_after5)[1:3,1:3]
+unique(tax_table(phyloseq_no_after5)[,"ASV_ID"] )
+
+
+
+#after decontam 0.6
+phyloseq_no_after6 <- subset_taxa(phyloseq_no_Unidentified, !is.na(Phylum))
+phyloseq_no_after6
+
+tax_table(phyloseq_no_after6)[tax_table(phyloseq_no_after6) == "d__Bacteria"] <- "Bacteria"
+phyloseq::tax_table(phyloseq_no_after6)[1:3,1:3]
+unique(tax_table(phyloseq_no_after6)[,"ASV_ID"] )
+
+
+#after decontam 0.8
+phyloseq_no_after8 <- subset_taxa(phyloseq_no_Unidentified, !is.na(Phylum))
+phyloseq_no_after8
+
+tax_table(phyloseq_no_after8)[tax_table(phyloseq_no_after8) == "d__Bacteria"] <- "Bacteria"
+phyloseq::tax_table(phyloseq_no_after8)[1:3,1:3]
+unique(tax_table(phyloseq_no_after8)[,"ASV_ID"] )
+
+
