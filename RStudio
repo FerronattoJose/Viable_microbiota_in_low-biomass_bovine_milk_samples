@@ -45,17 +45,21 @@ colnames(tax_table(physeq)) <- c("Kingdom", "Phylum", "Class", "Order",
 
 
 #Filtering Unwanted Taxa
+
 EU1 <- subset_taxa(physeq, Kingdom == "d__Eukaryota")
-phyloseq_no_euk <- prune_taxa(taxa_names(physeq)[!taxa_names(physeq) %in% taxa_names(EU1)], physeq)
+EU1 <-  as(tax_table(EU1), "matrix")
+EU1 <- EU1[, 8]
+EU1df <- as.factor(EU1)
+goodTaxa <- setdiff(taxa_names(physeq), EU1df)
+phyloseq_no_euk <- prune_taxa(goodTaxa, physeq)
 phyloseq_no_euk
 
-
-NA1 <- subset_taxa(phyloseq_no_euk, Kingdom == "Unassigned")
+NA1 <- subset_taxa(physeq, Kingdom == "Unassigned")
 NA1 <-  as(tax_table(NA1), "matrix")
 NA1 <- NA1[, 8]
 NA1df <- as.factor(NA1)
-goodTaxa <- setdiff(taxa_names(phyloseq_no_euk), NA1df)
-phyloseq_no_NA <- prune_taxa(goodTaxa, phyloseq_no_euk)
+goodTaxa <- setdiff(taxa_names(physeq), NA1df)
+phyloseq_no_NA <- prune_taxa(goodTaxa, physeq)
 phyloseq_no_NA
 
 NA2 <- subset_taxa(phyloseq_no_NA, Kingdom == "d__Archaea")
@@ -66,7 +70,7 @@ goodTaxa <- setdiff(taxa_names(phyloseq_no_NA), NA2df)
 phyloseq_no_Arch <- prune_taxa(goodTaxa, phyloseq_no_NA)
 phyloseq_no_Arch
 
-NA3 <- subset_taxa(phyloseq_no_Arch, Phylum == "Cyanobacteria")
+NA3 <- subset_taxa(phyloseq_no_Arch, Phylum == "Cyanobacteriota")
 NA3 <-  as(tax_table(NA3), "matrix")
 NA3 <- NA3[, 8]
 NA3df <- as.factor(NA3)
@@ -82,7 +86,6 @@ NA4df <- as.factor(NA4)
 goodTaxa <- setdiff(taxa_names(phyloseq_no_Cyano), NA4df)
 phyloseq_no_Unidentified <- prune_taxa(goodTaxa, phyloseq_no_Cyano)
 phyloseq_no_Unidentified
-
 
 #Use this code to check if was removed
 table(tax_table(phyloseq_no_Unidentified)[, "Kingdom"])
