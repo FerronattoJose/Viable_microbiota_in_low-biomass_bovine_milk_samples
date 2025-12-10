@@ -8,7 +8,24 @@ library(ggpubr)
 
 #BEFORE DECONTAM
 
-#GET THE GENUS TABLE - SAMPLES + RELATIVE ABUNDANCE
+
+#Get the genus table from the phyloseq object 
+
+physeq_genus <- tax_glom(phyloseq_before_withoutneg, taxrank = "Genus")
+
+abundance_matrix <- as.data.frame(otu_table(physeq_genus))
+taxonomy <- as.data.frame(tax_table(physeq_genus))
+
+# Combine all taxonomy columns with abundance data
+complete_genus_table <- cbind(taxonomy, abundance_matrix)
+
+# No need to change row names - they remain as unique ASV IDs
+head(complete_genus_table[, 1:8])
+
+write.table(complete_genus_table, "genus_abundance_before_complete.tsv", 
+            sep = "\t", row.names = FALSE)
+
+
 feature_data <- read.table("Genus_before.tsv", header = TRUE, row.names = 1)
 
 df <- read.table("Genus_before.tsv", header = TRUE, sep = "\t", check.names = FALSE)
@@ -174,7 +191,23 @@ p
 
 #THRESHOLD 0.5
 
-#GET THE GENUS TABLE - SAMPLES + RELATIVE ABUNDANCE
+
+#Get the genus table from the phyloseq object 
+physeq_genus <- tax_glom(phyloseq_after5_withoutneg, taxrank = "Genus")
+
+abundance_matrix <- as.data.frame(otu_table(physeq_genus))
+taxonomy <- as.data.frame(tax_table(physeq_genus))
+
+# Combine all taxonomy columns with abundance data
+complete_genus_table <- cbind(taxonomy, abundance_matrix)
+
+# No need to change row names - they remain as unique ASV IDs
+head(complete_genus_table[, 1:8])
+
+write.table(complete_genus_table, "genus_abundance_after5_complete.tsv", 
+            sep = "\t", row.names = FALSE)
+
+
 feature_data <- read.table("Genus_after5.tsv", header = TRUE, row.names = 1)
 
 df <- read.table("Genus_after5.tsv", header = TRUE, sep = "\t", check.names = FALSE)
@@ -336,7 +369,23 @@ p5
 
 #THRESHOLD 0.6
 
-#GET THE GENUS TABLE - SAMPLES + RELATIVE ABUNDANCE
+#Get the genus table from the phyloseq object 
+physeq_genus <- tax_glom(phyloseq_after6_withoutneg, taxrank = "Genus")
+
+abundance_matrix <- as.data.frame(otu_table(physeq_genus))
+taxonomy <- as.data.frame(tax_table(physeq_genus))
+
+# Combine all taxonomy columns with abundance data
+complete_genus_table <- cbind(taxonomy, abundance_matrix)
+
+# No need to change row names - they remain as unique ASV IDs
+head(complete_genus_table[, 1:8])
+
+write.table(complete_genus_table, "genus_abundance_after6_complete.tsv", 
+            sep = "\t", row.names = FALSE)
+
+
+
 feature_data <- read.table("Genus_after6.tsv", header = TRUE, row.names = 1)
 
 df <- read.table("Genus_after6.tsv", header = TRUE, sep = "\t", check.names = FALSE)
@@ -399,7 +448,22 @@ df <- read.table("Genus_after6.tsv", header = TRUE, check.names = FALSE)
 
 #THRESHOLD 0.8
 
-#GET THE GENUS TABLE - SAMPLES + RELATIVE ABUNDANCE
+#Get the genus table from the phyloseq object 
+physeq_genus <- tax_glom(phyloseq_after8_withoutneg, taxrank = "Genus")
+
+abundance_matrix <- as.data.frame(otu_table(physeq_genus))
+taxonomy <- as.data.frame(tax_table(physeq_genus))
+
+# Combine all taxonomy columns with abundance data
+complete_genus_table <- cbind(taxonomy, abundance_matrix)
+
+# No need to change row names - they remain as unique ASV IDs
+head(complete_genus_table[, 1:8])
+
+write.table(complete_genus_table, "genus_abundance_after8_complete.tsv", 
+            sep = "\t", row.names = FALSE)
+
+
 feature_data <- read.table("Genus_after8.tsv", header = TRUE, row.names = 1)
 
 df <- read.table("Genus_after8.tsv", header = TRUE, sep = "\t", check.names = FALSE)
