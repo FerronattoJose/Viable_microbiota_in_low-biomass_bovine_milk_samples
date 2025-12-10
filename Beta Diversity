@@ -1,0 +1,466 @@
+#Load your packages
+
+library(microbiome)
+library(phyloseq)
+library(ggpubr)
+library(dplyr)
+library(ggplot2)
+library(vegan)
+library(ggrepel)
+
+#BEFORE DECONTAM 
+
+# 1) Set factor order BEFORE transforms
+sample_data(phyloseq_before_withoutneg)$Group <- 
+  factor(sample_data(phyloseq_before_withoutneg)$Group,
+         levels = c("Viable", "Total"))
+
+# 2) Transform to compositional
+ps2.rel.BD <- microbiome::transform(phyloseq_before_withoutneg, "compositional")
+
+# 3) Distance + Ordination
+wunifrac_dist <- phyloseq::distance(ps2.rel.BD, method = "unifrac", weighted = FALSE)
+ordination <- ordinate(ps2.rel.BD, method = "PCoA", distance = wunifrac_dist)
+
+# 4) PERMANOVA (adonis2)
+sd_df <- as(sample_data(ps2.rel.BD), "data.frame")
+adon <- adonis2(wunifrac_dist ~ Group, data = sd_df)
+
+# Extract p-value
+pval <- adon$`Pr(>F)`[1]
+pval_string <- signif(pval, 3)
+
+# 5) Build Ordination Plot
+p_ord_b_uw <- plot_ordination(ps2.rel.BD, ordination, color = "Group", shape = "Group") +
+  theme_classic() + 
+  theme(
+    aspect.ratio = 1,
+    axis.text = element_text(size = 18),
+    axis.title = element_text(size = 24),
+    legend.text = element_text(size = 14),
+    legend.title = element_blank(),
+    plot.margin = unit(c(1, 1, 2, 1), "lines")
+  ) +
+  stat_ellipse(aes(fill = Group), geom = "polygon", type = "norm", alpha = 0.3) +
+  geom_point(aes(shape = Group, fill = Group), size = 3) +
+  geom_text_repel(aes(label = Quarters), size = 2, max.overlaps = 130) +
+  scale_fill_manual(values = c("Viable" = "coral", "Total" = "steelblue")) +
+  scale_color_manual(values = c("Viable" = "coral", "Total" = "steelblue")) +
+  scale_shape_manual(values = c("Viable" = 21, "Total" = 24))
+
+# 6) Add italic p-value annotation
+p_ord_b_uw <- p_ord_b_uw +
+  annotate(
+    "text",
+    x = Inf, y = -Inf,
+    label = paste0("italic(p) == ", pval_string),
+    parse = TRUE,
+    hjust = 1.1, vjust = -0.4, size = 5
+  ) +
+  coord_cartesian(clip = "off")
+
+# 7) Print
+p_ord_b_uw
+
+
+
+
+
+#WEIGHTED
+
+wunifrac_dist = phyloseq::distance(ps2.rel.BD, method="unifrac", weighted=TRUE)
+ordination = ordinate(ps2.rel.BD, method="PCoA", distance=wunifrac_dist)
+
+
+# 4) PERMANOVA (adonis2)
+sd_df <- as(sample_data(ps2.rel.BD), "data.frame")
+adon <- adonis2(wunifrac_dist ~ Group, data = sd_df)
+
+# Extract p-value
+pval <- adon$`Pr(>F)`[1]
+pval_string <- signif(pval, 3)
+
+# 5) Build Ordination Plot
+p_ord_b_w <- plot_ordination(ps2.rel.BD, ordination, color = "Group", shape = "Group") +
+  theme_classic() + 
+  theme(
+    aspect.ratio = 1,
+    axis.text = element_text(size = 18),
+    axis.title = element_text(size = 24),
+    legend.text = element_text(size = 14),
+    legend.title = element_blank(),
+    plot.margin = unit(c(1, 1, 2, 1), "lines")
+  ) +
+  stat_ellipse(aes(fill = Group), geom = "polygon", type = "norm", alpha = 0.3) +
+  geom_point(aes(shape = Group, fill = Group), size = 3) +
+  geom_text_repel(aes(label = Quarters), size = 2, max.overlaps = 130) +
+  scale_fill_manual(values = c("Viable" = "coral", "Total" = "steelblue")) +
+  scale_color_manual(values = c("Viable" = "coral", "Total" = "steelblue")) +
+  scale_shape_manual(values = c("Viable" = 21, "Total" = 24))
+
+# 6) Add italic p-value annotation
+p_ord_b_w <- p_ord_b_w +
+  annotate(
+    "text",
+    x = Inf, y = -Inf,
+    label = paste0("italic(p) == ", pval_string),
+    parse = TRUE,
+    hjust = 1.1, vjust = -0.4, size = 5
+  ) +
+  coord_cartesian(clip = "off")
+
+# 7) Print
+p_ord_b_w
+
+
+
+
+
+#THRESHOLD 0.5
+
+
+# 1) Set factor order Threshold 0.5 transforms
+sample_data(phyloseq_after5_withoutneg)$Group <- 
+  factor(sample_data(phyloseq_after5_withoutneg)$Group,
+         levels = c("Viable", "Total"))
+
+# 2) Transform to compositional
+ps25.rel.BD <- microbiome::transform(phyloseq_after5_withoutneg, "compositional")
+
+# 3) Distance + Ordination
+wunifrac_dist <- phyloseq::distance(ps25.rel.BD, method = "unifrac", weighted = FALSE)
+ordination <- ordinate(ps25.rel.BD, method = "PCoA", distance = wunifrac_dist)
+
+# 4) PERMANOVA (adonis2)
+sd_df <- as(sample_data(ps25.rel.BD), "data.frame")
+adon <- adonis2(wunifrac_dist ~ Group, data = sd_df)
+
+# Extract p-value
+pval <- adon$`Pr(>F)`[1]
+pval_string <- signif(pval, 3)
+
+# 5) Build Ordination Plot
+p_ord_5_uw <- plot_ordination(ps25.rel.BD, ordination, color = "Group", shape = "Group") +
+  theme_classic() + 
+  theme(
+    aspect.ratio = 1,
+    axis.text = element_text(size = 18),
+    axis.title = element_text(size = 24),
+    legend.text = element_text(size = 14),
+    legend.title = element_blank(),
+    plot.margin = unit(c(1, 1, 2, 1), "lines")
+  ) +
+  stat_ellipse(aes(fill = Group), geom = "polygon", type = "norm", alpha = 0.3) +
+  geom_point(aes(shape = Group, fill = Group), size = 3) +
+  geom_text_repel(aes(label = Quarters), size = 2, max.overlaps = 130) +
+  scale_fill_manual(values = c("Viable" = "coral", "Total" = "steelblue")) +
+  scale_color_manual(values = c("Viable" = "coral", "Total" = "steelblue")) +
+  scale_shape_manual(values = c("Viable" = 21, "Total" = 24))
+
+# 6) Add italic p-value annotation
+p_ord_5_uw <- p_ord_5_uw +
+  annotate(
+    "text",
+    x = Inf, y = -Inf,
+    label = paste0("italic(p) == ", pval_string),
+    parse = TRUE,
+    hjust = 1.1, vjust = -0.4, size = 5
+  ) +
+  coord_cartesian(clip = "off")
+
+# 7) Print
+p_ord_5_uw
+
+
+
+
+
+#WEIGHTED
+
+wunifrac_dist = phyloseq::distance(ps25.rel.BD, method="unifrac", weighted=TRUE)
+ordination = ordinate(ps25.rel.BD, method="PCoA", distance=wunifrac_dist)
+
+
+# 4) PERMANOVA (adonis2)
+sd_df <- as(sample_data(ps25.rel.BD), "data.frame")
+adon <- adonis2(wunifrac_dist ~ Group, data = sd_df)
+
+# Extract p-value
+pval <- adon$`Pr(>F)`[1]
+pval_string <- signif(pval, 3)
+
+# 5) Build Ordination Plot
+p_ord_5_w <- plot_ordination(ps25.rel.BD, ordination, color = "Group", shape = "Group") +
+  theme_classic() + 
+  theme(
+    aspect.ratio = 1,
+    axis.text = element_text(size = 18),
+    axis.title = element_text(size = 24),
+    legend.text = element_text(size = 14),
+    legend.title = element_blank(),
+    plot.margin = unit(c(1, 1, 2, 1), "lines")
+  ) +
+  stat_ellipse(aes(fill = Group), geom = "polygon", type = "norm", alpha = 0.3) +
+  geom_point(aes(shape = Group, fill = Group), size = 3) +
+  geom_text_repel(aes(label = Quarters), size = 2, max.overlaps = 130) +
+  scale_fill_manual(values = c("Viable" = "coral", "Total" = "steelblue")) +
+  scale_color_manual(values = c("Viable" = "coral", "Total" = "steelblue")) +
+  scale_shape_manual(values = c("Viable" = 21, "Total" = 24))
+
+# 6) Add italic p-value annotation
+p_ord_5_w <- p_ord_5_w +
+  annotate(
+    "text",
+    x = Inf, y = -Inf,
+    label = paste0("italic(p) == ", pval_string),
+    parse = TRUE,
+    hjust = 1.1, vjust = -0.4, size = 5
+  ) +
+  coord_cartesian(clip = "off")
+
+# 7) Print
+p_ord_5_w
+
+
+
+
+# THRESHOLD 0.6
+
+
+# 1) Set factor order Threshold 0.6 transforms
+sample_data(phyloseq_after6_withoutneg)$Group <- 
+  factor(sample_data(phyloseq_after6_withoutneg)$Group,
+         levels = c("Viable", "Total"))
+
+# 2) Transform to compositional
+ps26.rel.BD <- microbiome::transform(phyloseq_after6_withoutneg, "compositional")
+
+# 3) Distance + Ordination
+wunifrac_dist <- phyloseq::distance(ps26.rel.BD, method = "unifrac", weighted = FALSE)
+ordination <- ordinate(ps26.rel.BD, method = "PCoA", distance = wunifrac_dist)
+
+# 4) PERMANOVA (adonis2)
+sd_df <- as(sample_data(ps26.rel.BD), "data.frame")
+adon <- adonis2(wunifrac_dist ~ Group, data = sd_df)
+
+# Extract p-value
+pval <- adon$`Pr(>F)`[1]
+pval_string <- signif(pval, 3)
+
+# 5) Build Ordination Plot
+p_ord_6_uw <- plot_ordination(ps26.rel.BD, ordination, color = "Group", shape = "Group") +
+  theme_classic() + 
+  theme(
+    aspect.ratio = 1,
+    axis.text = element_text(size = 18),
+    axis.title = element_text(size = 24),
+    legend.text = element_text(size = 14),
+    legend.title = element_blank(),
+    plot.margin = unit(c(1, 1, 2, 1), "lines")
+  ) +
+  stat_ellipse(aes(fill = Group), geom = "polygon", type = "norm", alpha = 0.3) +
+  geom_point(aes(shape = Group, fill = Group), size = 3) +
+  geom_text_repel(aes(label = Quarters), size = 2, max.overlaps = 130) +
+  scale_fill_manual(values = c("Viable" = "coral", "Total" = "steelblue")) +
+  scale_color_manual(values = c("Viable" = "coral", "Total" = "steelblue")) +
+  scale_shape_manual(values = c("Viable" = 21, "Total" = 24))
+
+# 6) Add italic p-value annotation
+p_ord_6_uw <- p_ord_6_uw +
+  annotate(
+    "text",
+    x = Inf, y = -Inf,
+    label = paste0("italic(p) == ", pval_string),
+    parse = TRUE,
+    hjust = 1.1, vjust = -0.4, size = 5
+  ) +
+  coord_cartesian(clip = "off")
+
+# 7) Print
+p_ord_6_uw
+
+
+
+
+
+#WEIGHTED
+
+wunifrac_dist = phyloseq::distance(ps26.rel.BD, method="unifrac", weighted=TRUE)
+ordination = ordinate(ps26.rel.BD, method="PCoA", distance=wunifrac_dist)
+
+
+# 4) PERMANOVA (adonis2)
+sd_df <- as(sample_data(ps26.rel.BD), "data.frame")
+adon <- adonis2(wunifrac_dist ~ Group, data = sd_df)
+
+# Extract p-value
+pval <- adon$`Pr(>F)`[1]
+pval_string <- signif(pval, 3)
+
+# 5) Build Ordination Plot
+p_ord_6_w <- plot_ordination(ps26.rel.BD, ordination, color = "Group", shape = "Group") +
+  theme_classic() + 
+  theme(
+    aspect.ratio = 1,
+    axis.text = element_text(size = 18),
+    axis.title = element_text(size = 24),
+    legend.text = element_text(size = 14),
+    legend.title = element_blank(),
+    plot.margin = unit(c(1, 1, 2, 1), "lines")
+  ) +
+  stat_ellipse(aes(fill = Group), geom = "polygon", type = "norm", alpha = 0.3) +
+  geom_point(aes(shape = Group, fill = Group), size = 3) +
+  geom_text_repel(aes(label = Quarters), size = 2, max.overlaps = 130) +
+  scale_fill_manual(values = c("Viable" = "coral", "Total" = "steelblue")) +
+  scale_color_manual(values = c("Viable" = "coral", "Total" = "steelblue")) +
+  scale_shape_manual(values = c("Viable" = 21, "Total" = 24))
+
+# 6) Add italic p-value annotation
+p_ord_6_w <- p_ord_6_w +
+  annotate(
+    "text",
+    x = Inf, y = -Inf,
+    label = paste0("italic(p) == ", pval_string),
+    parse = TRUE,
+    hjust = 1.1, vjust = -0.4, size = 5
+  ) +
+  coord_cartesian(clip = "off")
+
+# 7) Print
+p_ord_6_w
+
+
+
+#THRESHOLD 0.8
+
+# 1) Set factor order Threshold 0.8 transforms
+sample_data(phyloseq_after8_withoutneg)$Group <- 
+  factor(sample_data(phyloseq_after8_withoutneg)$Group,
+         levels = c("Viable", "Total"))
+
+# 2) Transform to compositional
+ps28.rel.BD <- microbiome::transform(phyloseq_after8_withoutneg, "compositional")
+
+# 3) Distance + Ordination
+wunifrac_dist <- phyloseq::distance(ps28.rel.BD, method = "unifrac", weighted = FALSE)
+ordination <- ordinate(ps28.rel.BD, method = "PCoA", distance = wunifrac_dist)
+
+# 4) PERMANOVA (adonis2)
+sd_df <- as(sample_data(ps28.rel.BD), "data.frame")
+adon <- adonis2(wunifrac_dist ~ Group, data = sd_df)
+
+# Extract p-value
+pval <- adon$`Pr(>F)`[1]
+pval_string <- signif(pval, 3)
+
+# 5) Build Ordination Plot
+p_ord_8_uw <- plot_ordination(ps28.rel.BD, ordination, color = "Group", shape = "Group") +
+  theme_classic() + 
+  theme(
+    aspect.ratio = 1,
+    axis.text = element_text(size = 18),
+    axis.title = element_text(size = 24),
+    legend.text = element_text(size = 14),
+    legend.title = element_blank(),
+    plot.margin = unit(c(1, 1, 2, 1), "lines")
+  ) +
+  stat_ellipse(aes(fill = Group), geom = "polygon", type = "norm", alpha = 0.3) +
+  geom_point(aes(shape = Group, fill = Group), size = 3) +
+  geom_text_repel(aes(label = Quarters), size = 2, max.overlaps = 130) +
+  scale_fill_manual(values = c("Viable" = "coral", "Total" = "steelblue")) +
+  scale_color_manual(values = c("Viable" = "coral", "Total" = "steelblue")) +
+  scale_shape_manual(values = c("Viable" = 21, "Total" = 24))
+
+# 6) Add italic p-value annotation
+p_ord_8_uw <- p_ord_8_uw +
+  annotate(
+    "text",
+    x = Inf, y = -Inf,
+    label = paste0("italic(p) == ", pval_string),
+    parse = TRUE,
+    hjust = 1.1, vjust = -0.4, size = 5
+  ) +
+  coord_cartesian(clip = "off")
+
+# 7) Print
+p_ord_8_uw
+
+
+
+
+
+#WEIGHTED
+
+wunifrac_dist = phyloseq::distance(ps28.rel.BD, method="unifrac", weighted=TRUE)
+ordination = ordinate(ps28.rel.BD, method="PCoA", distance=wunifrac_dist)
+
+
+# 4) PERMANOVA (adonis2)
+sd_df <- as(sample_data(ps28.rel.BD), "data.frame")
+adon <- adonis2(wunifrac_dist ~ Group, data = sd_df)
+
+# Extract p-value
+pval <- adon$`Pr(>F)`[1]
+pval_string <- signif(pval, 3)
+
+# 5) Build Ordination Plot
+p_ord_8_w <- plot_ordination(ps28.rel.BD, ordination, color = "Group", shape = "Group") +
+  theme_classic() + 
+  theme(
+    aspect.ratio = 1,
+    axis.text = element_text(size = 18),
+    axis.title = element_text(size = 24),
+    legend.text = element_text(size = 14),
+    legend.title = element_blank(),
+    plot.margin = unit(c(1, 1, 2, 1), "lines")
+  ) +
+  stat_ellipse(aes(fill = Group), geom = "polygon", type = "norm", alpha = 0.3) +
+  geom_point(aes(shape = Group, fill = Group), size = 3) +
+  geom_text_repel(aes(label = Quarters), size = 2, max.overlaps = 130) +
+  scale_fill_manual(values = c("Viable" = "coral", "Total" = "steelblue")) +
+  scale_color_manual(values = c("Viable" = "coral", "Total" = "steelblue")) +
+  scale_shape_manual(values = c("Viable" = 21, "Total" = 24))
+
+# 6) Add italic p-value annotation
+p_ord_8_w <- p_ord_8_w +
+  annotate(
+    "text",
+    x = Inf, y = -Inf,
+    label = paste0("italic(p) == ", pval_string),
+    parse = TRUE,
+    hjust = 1.1, vjust = -0.4, size = 5
+  ) +
+  coord_cartesian(clip = "off")
+
+# 7) Print
+p_ord_8_w
+
+
+
+#COMBINE GRAPHS - BEFORE AND THRESHOLD 0.8
+
+combined_ord_all <- ggarrange(
+  p_ord_b_uw, p_ord_b_w,
+  p_ord_8_uw, p_ord_8_w,
+  ncol = 2, nrow = 2,
+  labels = c("A", "B", "C", "D"),
+  common.legend = FALSE,
+  legend = "right"
+)
+
+combined_ord_all
+
+
+
+#COMBINE GRAPHS - THRESHOLD 0.5 AND THRESHOLD 0.6
+
+combined_ord_a <- ggarrange(
+  p_ord_5_uw, p_ord_5_w,   # Column 1
+  p_ord_6_uw, p_ord_6_w,   # Column 2
+  ncol = 2, nrow = 2,       # 2 columns × 3 rows
+  labels = c("A", "B", "C", "D"),
+  common.legend = FALSE,
+  legend = "right"
+)
+
+combined_ord_a
