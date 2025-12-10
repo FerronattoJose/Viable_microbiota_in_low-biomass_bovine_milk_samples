@@ -1,0 +1,914 @@
+#Load your packages
+
+library(microbiome)
+library(phyloseq)
+library(ggpubr)
+library(dplyr)
+library(ggplot2)
+
+#BEFORE DECONTAM 
+
+ps2 <- phyloseq_before_withoutneg
+
+# set desired order on the ps28 phyloseq object
+sample_data(ps2)$Group <- factor(sample_data(ps2)$Group,
+                                  levels = c("Viable", "Total"))
+
+# check
+levels(sample_data(ps2)$Group)
+table(sample_data(ps2)$Group)
+
+# get relative abudance
+ps2.rel <- microbiome::transform(ps2, "compositional")
+                                       
+
+#PHYLUM                          
+ps2.phy.rel <- aggregate_rare(ps2.rel, level = "Phylum", detection = 0.05, prevalence = 0.1)
+
+table(taxa_sums(ps2.phy.rel) > (0.01 * sum(taxa_sums(ps2.phy.rel))))
+                                       
+
+#FAMILY                                       
+ps2.fam.rel <- aggregate_rare(ps2.rel, level = "Family", detection = 0.05, prevalence = 0.1)
+
+table(taxa_sums(ps2.fam.rel) > (0.01 * sum(taxa_sums(ps2.fam.rel)))) 
+
+
+#GENUS                                       
+ps2.gen.rel <- aggregate_rare(ps2.rel, level = "Genus", detection = 0.05, prevalence = 0.1)
+
+table(taxa_sums(ps2.gen.rel) > (0.01 * sum(taxa_sums(ps2.gen.rel)))) 
+
+
+#You can use a different palletes.  
+                                       
+colorsASV <- c("ASV1720" = "#2A363BFF",
+              "ASV1722" = "#8C2B3DFF",
+              "ASV1724" = "#FFB6C1",
+              "ASV1911" = "#FECEA8FF",
+              "ASV1912" = "#E84A5FFF",
+              "ASV1978" = "#FF847CFF",
+              "ASV1979" = "#9F6E71FF",
+              "ASV2057" = "#019875FF",
+              "ASV2083" = "#21908CFF",
+              "ASV235" = "#ABCCBEFF",
+              "ASV236" = "#99B898FF",
+              "ASV237" = "#749E89FF",
+              "ASV2457" = "#E3E418FF",
+              "ASV256" = "#20A486FF",
+              "ASV257" = "#FF5733",
+              "ASV263" = "#481F70FF",
+              "ASV2615" = "#365D8DFF",
+              "ASV264" = "#C399A2FF",
+              "ASV266" = "#4E6D58FF",
+              "ASV272" = "#35B779FF",
+              "ASV273" = "#7D87B2FF",
+              "ASV275" = "#C2CAE3FF",
+              "ASV276" = "#E3CACFFF",
+              "ASV278" = "#87CEEB",
+              "ASV279" = "#FFDAB9",
+              "ASV1882" = "#20B2AA",
+              "ASV2951" = "#24868EFF",
+              "ASV1884" = "#471164FF",
+              "ASV354" = "#BA55D3",
+              "ASV531" = "#C7E020FF",
+              "ASV535" = "#C71585",
+              "ASV590" = "#8A2BE2",
+              "ASV591" = "#FDE725FF",
+              "ASV356" = "#440154FF",
+              "Other" = "#41507BFF")
+
+
+colorsph <- c("Actinomycetota" = "#2A363BFF",
+              "Bacillota" = "#99B898FF",
+              "Bacteroidota" = "#019875FF",
+              "Other" = "#FECEA8FF",
+              "Pseudomonadota" = "#FF847CFF",
+              "Chloroflexota" = "#E84A5FFF")
+
+
+colorsfa <- c("Bacillaceae" = "#2A363BFF",
+              "Chitinophagaceae" = "#8C2B3DFF",
+              "Hyphomicrobiaceae" = "#FFB6C1",
+              "Other" = "#FECEA8FF",
+              "Propionibacteriaceae" = "#E84A5FFF",
+              "Pseudomonadaceae" = "#FF847CFF",
+              "Staphylococcaceae" = "#9F6E71FF",
+              "Streptococcaceae" = "#019875FF",
+              "Unknown" = "#41507BFF",
+              "Moraxellaceae" = "#ABCCBEFF",
+              "Sphingomonadaceae" = "#99B898FF",
+              "Comamonadaceae" = "#749E89FF",
+              "Corynebacteriaceae" = "#E3CACFFF",
+              "Oxalobacteraceae" = "#C399A2FF",
+              "Clostridiaceae" = "#4E6D58FF",
+              "Peptostreptococcaceae" = "#35B779FF",
+              "Enterobacteriaceae" = "#7D87B2FF",
+              "Rhizobiaceae" = "#C2CAE3FF",
+              "Lachnospiraceae" = "#27AD81FF") 
+
+
+colorsge <- c("Bacillus" = "#2A363BFF",
+              "Cutibacterium" = "#749E89FF",
+              "Pedomicrobium" = "#FFB6C1",
+              "Other" = "#FECEA8FF",
+              "Pseudomonas" = "#FF847CFF",
+              "Staphylococcus" = "#9F6E71FF",
+              "Unknown" = "#41507BFF",
+              "Sediminibacterium" = "#99B898FF",
+              "Acinetobacter" = "#ABCCBEFF",
+              "Corynebacterium" = "#E3CACFFF")
+
+
+
+#PHYLUM                                       
+ps2.phy.rel.sorted <- ps2.phy.rel %>%
+  tax_sort(
+    by = sum, 
+    at = "Phylum",
+    descending = TRUE  # Sort from most to least abundant
+  ) 
+
+
+
+# Plot
+p_avg_phy <- plot_composition(ps2.phy.rel.sorted,
+                              average_by = "Group") + 
+  guides(fill = guide_legend(ncol = 1)) + 
+  labs(x = NULL, 
+       y = "Relative abundance") +
+  scale_fill_manual("Phylum", values = colorsph, guide = guide_legend(reverse = TRUE))  +
+  theme_bw() + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) 
+
+print(p_avg_phy)
+
+
+
+
+#FAMILY
+ps2.fam.rel.sorted <- ps2.fam.rel %>%
+  tax_sort(
+    by = sum, 
+    at = "Family",
+    descending = TRUE  # Sort from most to least abundant
+  )
+
+
+
+p_avg_fam <- plot_composition(ps2.fam.rel.sorted,
+                              average_by = "Group") + 
+  guides(fill = guide_legend(ncol = 1)) + 
+  labs(x = NULL, 
+       y = "Relative abundance") +
+  scale_fill_manual("Family", values = colorsfa) +
+  theme_bw() + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) 
+
+p_avg_fam
+
+
+#GENUS
+ps2.gen.rel.sorted <- ps2.gen.rel %>%
+  tax_sort(
+    by = sum, 
+    at = "Genus",
+    descending = TRUE  # Sort from most to least abundant
+  )
+
+genus_labels <- setNames(
+  lapply(names(colorsge), function(x) bquote(italic(.(x)))),
+  names(colorsge)
+)
+
+
+p_avg_gen <- plot_composition(ps2.gen.rel.sorted,
+                              average_by = "Group") + 
+  guides(fill = guide_legend(ncol = 1)) + 
+  labs(x = NULL, 
+       y = "Relative abundance") +
+  scale_fill_manual("Genus", values = colorsge,  labels = genus_labels, guide = guide_legend(reverse = FALSE)) + 
+  theme_bw() + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) 
+
+p_avg_gen
+
+
+  
+#THRESHOLD 0.5
+
+
+ps25 <- phyloseq_after5_withoutneg
+
+# set desired order on the ps28 phyloseq object
+sample_data(ps25)$Group <- factor(sample_data(ps25)$Group,
+                                 levels = c("Viable", "Total"))
+
+# check
+levels(sample_data(ps25)$Group)
+table(sample_data(ps25)$Group)
+
+# get relative abudance
+ps25.rel <- microbiome::transform(ps25, "compositional")
+
+
+#PHYLUM
+ps25.phy.rel <- aggregate_rare(ps25.rel, level = "Phylum", detection = 0.05, prevalence = 0.1)
+
+table(taxa_sums(ps25.phy.rel) > (0.01 * sum(taxa_sums(ps25.phy.rel))))
+
+
+#FAMILY 
+ps25.fam.rel <- aggregate_rare(ps25.rel, level = "Family", detection = 0.05, prevalence = 0.1)
+
+table(taxa_sums(ps25.fam.rel) > (0.01 * sum(taxa_sums(ps25.fam.rel)))) 
+
+
+#GENUS  
+ps25.gen.rel <- aggregate_rare(ps25.rel, level = "Genus", detection = 0.05, prevalence = 0.1)
+
+table(taxa_sums(ps25.gen.rel) > (0.01 * sum(taxa_sums(ps25.gen.rel)))) 
+
+
+
+#PHYLUM
+ps25.phy.rel.sorted <- ps25.phy.rel %>%
+  tax_sort(
+    by = sum, 
+    at = "Phylum",
+    descending = TRUE  # Sort from most to least abundant
+  ) 
+
+
+
+# Plot
+p_avg_phy5 <- plot_composition(ps25.phy.rel.sorted,
+                              average_by = "Group") + 
+  guides(fill = guide_legend(ncol = 1)) + 
+  labs(x = NULL, 
+       y = "Relative abundance") +
+  scale_fill_manual("Phylum", values = colorsph, guide = guide_legend(reverse = TRUE))  +
+  theme_bw() + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) 
+
+print(p_avg_phy5)
+
+
+
+
+#FAMILY
+ps25.fam.rel.sorted <- ps25.fam.rel %>%
+  tax_sort(
+    by = sum, 
+    at = "Family",
+    descending = TRUE  # Sort from most to least abundant
+  )
+
+
+
+p_avg_fam5 <- plot_composition(ps25.fam.rel.sorted,
+                              average_by = "Group") + 
+  guides(fill = guide_legend(ncol = 1)) + 
+  labs(x = NULL, 
+       y = "Relative abundance") +
+  scale_fill_manual("Family", values = colorsfa) +
+  theme_bw() + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) 
+
+p_avg_fam5
+
+
+#GENUS
+ps25.gen.rel.sorted <- ps25.gen.rel %>%
+  tax_sort(
+    by = sum, 
+    at = "Genus",
+    descending = TRUE  # Sort from most to least abundant
+  )
+
+genus_labels <- setNames(
+  lapply(names(colorsge), function(x) bquote(italic(.(x)))),
+  names(colorsge)
+)
+
+
+p_avg_gen5 <- plot_composition(ps25.gen.rel.sorted,
+                              average_by = "Group") + 
+  guides(fill = guide_legend(ncol = 1)) + 
+  labs(x = NULL, 
+       y = "Relative abundance") +
+  scale_fill_manual("Genus", values = colorsge,  labels = genus_labels, guide = guide_legend(reverse = FALSE)) + 
+  theme_bw() + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) 
+
+p_avg_gen5
+ 
+
+
+#THRESHOLD 0.6
+
+ps26 <- phyloseq_after6_withoutneg
+
+# set desired order on the ps28 phyloseq object
+sample_data(ps26)$Group <- factor(sample_data(ps26)$Group,
+                                  levels = c("Viable", "Total"))
+
+# check
+levels(sample_data(ps26)$Group)
+table(sample_data(ps26)$Group)
+
+
+# get relative abudance
+ps26.rel <- microbiome::transform(ps26, "compositional")
+
+
+#PHYLUM
+ps26.phy.rel <-aggregate_rare(ps26.rel, level = "Phylum", detection = 0.05, prevalence = 0.1)
+
+table(taxa_sums(ps26.phy.rel) > (0.01 * sum(taxa_sums(ps26.phy.rel))))
+
+  
+#FAMILY
+ps26.fam.rel <-aggregate_rare(ps26.rel, level = "Family", detection = 0.05, prevalence = 0.1)
+
+table(taxa_sums(ps26.fam.rel) > (0.01 * sum(taxa_sums(ps26.fam.rel))))
+
+  
+#GENUS
+ps26.gen.rel <-aggregate_rare(ps26.rel, level = "Genus", detection = 0.05, prevalence = 0.1)
+
+table(taxa_sums(ps26.gen.rel) > (0.01 * sum(taxa_sums(ps26.gen.rel)))) 
+
+
+
+#PHYLUM
+ps26.phy.rel.sorted <- ps26.phy.rel %>%
+  tax_sort(
+    by = sum, 
+    at = "Phylum",
+    descending = TRUE  # Sort from most to least abundant
+  ) 
+
+
+
+p_avg_phy.6 <- plot_composition(ps26.phy.rel.sorted,
+                                average_by = "Group") + 
+  guides(fill = guide_legend(ncol = 1)) + 
+  labs(x = NULL, 
+       y = "Relative abundance") +
+  scale_fill_manual("Phylum", values = colorsph, guide = guide_legend(reverse = TRUE))  +
+  theme_bw() + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) 
+
+p_avg_phy.6
+
+
+
+#FAMILY
+ps26.fam.rel.sorted <- ps26.fam.rel %>%
+  tax_sort(
+    by = sum, 
+    at = "Family",
+    descending = TRUE  # Sort from most to least abundant
+  )
+
+
+
+p_avg_fam.6 <- plot_composition(ps26.fam.rel.sorted,
+                                average_by = "Group") + 
+  guides(fill = guide_legend(ncol = 1)) + 
+  labs(x = NULL, 
+       y = "Relative abundance") +
+  scale_fill_manual("Family", values = colorsfa) +
+  theme_bw() + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) 
+
+
+p_avg_fam.6
+
+
+#GENUS
+ps26.gen.rel.sorted <- ps26.gen.rel %>%
+  tax_sort(
+    by = sum, 
+    at = "Genus",
+    descending = TRUE  # Sort from most to least abundant
+  )
+
+
+genus_labels <- setNames(
+  lapply(names(colorsge), function(x) bquote(italic(.(x)))),
+  names(colorsge)
+)
+
+
+p_avg_gen.6 <- plot_composition(ps26.gen.rel.sorted,
+                                average_by = "Group") + 
+  guides(fill = guide_legend(ncol = 1)) + 
+  labs(x = NULL, 
+       y = "Relative abundance") +
+  scale_fill_manual("Genus", values = colorsge, labels = genus_labels, guide = guide_legend(reverse = FALSE)) + 
+  theme_bw() + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) 
+
+p_avg_gen.6
+
+
+  
+#THRESHOLD 0.8
+
+ ps28 <- phyloseq_after8_withoutneg
+
+# set desired order on the ps28 phyloseq object
+sample_data(ps28)$Group <- factor(sample_data(ps28)$Group,
+                                  levels = c("Viable", "Total"))
+
+# check
+levels(sample_data(ps28)$Group)
+table(sample_data(ps28)$Group)
+
+
+# get relative abudance
+ps28.rel <- microbiome::transform(ps28, "compositional")
+
+
+#PHYLUM
+ps28.phy.rel <-aggregate_rare(ps28.rel, level = "Phylum", detection = 0.05, prevalence = 0.1)
+
+table(taxa_sums(ps28.phy.rel) > (0.01 * sum(taxa_sums(ps28.phy.rel))))
+
+  
+#FAMILY
+ps28.fam.rel <-aggregate_rare(ps28.rel, level = "Family", detection = 0.05, prevalence = 0.1)
+
+table(taxa_sums(ps28.fam.rel) > (0.01 * sum(taxa_sums(ps28.fam.rel))))
+  
+
+#GENUS 
+ps28.gen.rel <-aggregate_rare(ps28.rel, level = "Genus", detection = 0.05, prevalence = 0.1)
+
+table(taxa_sums(ps28.gen.rel) > (0.01 * sum(taxa_sums(ps28.gen.rel)))) 
+
+
+
+#PHYLUM
+ps28.phy.rel.sorted <- ps28.phy.rel %>%
+  tax_sort(
+    by = sum, 
+    at = "Phylum",
+    descending = TRUE  # Sort from most to least abundant
+  ) 
+
+
+
+p_avg_phy.8 <- plot_composition(ps28.phy.rel.sorted,
+                                average_by = "Group") + 
+  guides(fill = guide_legend(ncol = 1)) + 
+  labs(x = NULL, 
+       y = "Relative abundance") +
+  scale_fill_manual("Phylum", values = colorsph, guide = guide_legend(reverse = TRUE))  +
+  theme_bw() + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) 
+
+p_avg_phy.8
+
+
+
+#FAMILY
+ps28.fam.rel.sorted <- ps28.fam.rel %>%
+  tax_sort(
+    by = sum, 
+    at = "Family",
+    descending = TRUE  # Sort from most to least abundant
+  )
+
+
+
+p_avg_fam.8 <- plot_composition(ps28.fam.rel.sorted,
+                                average_by = "Group") + 
+  guides(fill = guide_legend(ncol = 1)) + 
+  labs(x = NULL, 
+       y = "Relative abundance") +
+  scale_fill_manual("Family", values = colorsfa) +
+  theme_bw() + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) 
+
+
+p_avg_fam.8
+
+
+#GENUS
+ps28.gen.rel.sorted <- ps28.gen.rel %>%
+  tax_sort(
+    by = sum, 
+    at = "Genus",
+    descending = TRUE  # Sort from most to least abundant
+  )
+
+
+genus_labels <- setNames(
+  lapply(names(colorsge), function(x) bquote(italic(.(x)))),
+  names(colorsge)
+)
+
+
+p_avg_gen.8 <- plot_composition(ps28.gen.rel.sorted,
+                                average_by = "Group") + 
+  guides(fill = guide_legend(ncol = 1)) + 
+  labs(x = NULL, 
+       y = "Relative abundance") +
+  scale_fill_manual("Genus", values = colorsge, labels = genus_labels, guide = guide_legend(reverse = FALSE)) + 
+  theme_bw() + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) 
+
+p_avg_gen.8
+
+ 
+# COMBINE THE GRAPHS - BEFORE AND THRESHOLD 0.8
+
+# Pair 1: A on top, B below
+pair1 <- ggarrange(p_avg_phy, p_avg_phy.8, ncol = 1, nrow = 2, labels = c("A", "B"))
+
+# Pair 2: C on top, D below
+pair2 <- ggarrange(p_avg_fam, p_avg_fam.8, ncol = 1, nrow = 2, labels = c("C", "D"))
+
+# Pair 3: E on top, F below
+pair3 <- ggarrange(p_avg_gen, p_avg_gen.8, ncol = 1, nrow = 2, labels = c("E", "F"))
+
+# Combine the three pairs horizontally
+combined_plot_all <- ggarrange(pair1, pair2, pair3, ncol = 3, nrow = 1, common.legend = FALSE)
+
+
+combined_plot_all  
+  
+
+
+# COMBINE THE GRAPHS - THRESHOLD 0.5 AND THRESHOLD 0.6
+
+# Pair 1: A on top, B below
+pair1 <- ggarrange(p_avg_phy5, p_avg_phy.6, ncol = 1, nrow = 2, labels = c("A", "B"))
+
+# Pair 2: C on top, D below
+pair2 <- ggarrange(p_avg_fam5, p_avg_fam.6, ncol = 1, nrow = 2, labels = c("C", "D"))
+
+# Pair 3: E on top, F below
+pair3 <- ggarrange(p_avg_gen5, p_avg_gen.6, ncol = 1, nrow = 2, labels = c("E", "F"))
+
+# Combine the three pairs horizontally
+combined_plot_a <- ggarrange(pair1, pair2, pair3, ncol = 3, nrow = 1, common.legend = FALSE)
+
+
+combined_plot_a  
+
+
+
+#ASV LEVEL (VIABLE) WITH THE NEGATIVE CONTROLS
+
+#BEFORE DECONTAM
+
+#Load your data
+ps.wPMA.b <- subset_samples(phyloseq_no_beforedecontam, Group == "Viable")
+
+# get relative abudance
+ps2.rel <- microbiome::transform(ps.wPMA.b, "compositional")
+  
+#ASV
+ps2.ASV.rel <- aggregate_rare(ps2.rel, level = "ASV_ID", detection = 0.01, prevalence = 0.1)
+
+ps.ASV.rel <- prune_taxa(taxa_sums(ps2.ASV.rel) > (0.01 * sum(taxa_sums(ps2.ASV.rel))), ps2.ASV.rel)
+
+ps2.ASV.rel <- transform_sample_counts(ps2.ASV.rel, function(x) x / sum(x))
+
+table(taxa_sums(ps2.ASV.rel) > (0.01 * sum(taxa_sums(ps2.ASV.rel))))
+
+
+
+ps2.ASV.rel.sorted <- ps2.ASV.rel %>%
+  tax_sort(
+    by = sum, 
+    at = "ASV_ID",
+    descending = TRUE  # Sort from most to least abundant
+  )
+
+
+# DEFINE THE ORDER OF YOUR SAMPLES IN THE GRAPH 
+x_levels <- c(
+  "NOTEMPLATE+", "02CONTROL+", "03CONTROL+", "04CONTROL+", "06CONTROL+", 
+  "07CONTROL+", "08CONTROL+", "09CONTROL+", "12CONTROL+", 
+  "02FR+", "02FL+", "02HR+", "02HL+",
+  "03FR+", "03FL+", "03HR+", "03HL+",
+  "04FR+", "04FL+", "04HR+", "04HL+",
+  "06FR+", "06FL+", "06HR+", "06HL+",
+  "07FR+", "07FL+", "07HR+", "07HL+",
+  "08FR+", "08FL+", "08HR+", "08HL+",
+  "09FR+", "09FL+", "09HR+", "09HL+",
+  "12FR+", "12FL+", "12HR+", "12HL+"
+)
+
+# SET UP THE BOX AREA FOR THE NEGATIVE CONTROLS
+start_level <- "NOTEMPLATE+"   # FIRST
+end_level   <- "12CONTROL+"   # LAST
+
+start_idx <- which(x_levels == start_level)
+end_idx   <- which(x_levels == end_level)
+
+# DEFINE THE BAR THICKNESS
+xmin_box <- start_idx - 0.5
+xmax_box <- end_idx   + 0.5
+
+# DEFINE THE BOX'S LINE
+ymin_box <- 0
+ymax_box <- 1.02
+
+#PLOT                                    
+p_avg_ASV <- plot_composition(ps2.ASV.rel.sorted, average_by = "Quarters") +
+  annotate("rect",
+           xmin = xmin_box, xmax = xmax_box,
+           ymin = ymin_box, ymax = ymax_box,
+           fill = NA,                
+           colour = "gold",  
+           size = 1.2) +            
+  guides(fill = guide_legend(ncol = 1)) + 
+  labs(x = NULL, y = "Relative abundance") +
+  scale_fill_manual("ASV-ID", values = rev(colorsASV)) + 
+  scale_x_discrete(limits = x_levels) +
+  coord_cartesian(ylim = c(0,1)) +   
+  theme_bw() + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) 
+
+p_avg_ASV 
+
+
+
+
+# THRESHOLD 0.5
+
+#Load your data
+ps5.wPMA <- subset_samples(phyloseq_no_after5, Group == "Viable")
+
+# get relative abudance
+ps25.rel <- microbiome::transform(ps5.wPMA, "compositional")
+
+
+#ASV
+ps25.ASV.rel <- aggregate_rare(ps25.rel, level = "ASV_ID", detection = 0.01, prevalence = 0.1)
+
+ps25.ASV.rel <- prune_taxa(taxa_sums(ps25.ASV.rel) > (0.01 * sum(taxa_sums(ps25.ASV.rel))), ps25.ASV.rel)
+
+ps25.ASV.rel <- transform_sample_counts(ps25.ASV.rel, function(x) x / sum(x))
+
+
+table(taxa_sums(ps25.ASV.rel) > (0.01 * sum(taxa_sums(ps25.ASV.rel))))
+
+
+
+
+
+ps25.ASV.rel.sorted <- ps25.ASV.rel %>%
+  tax_sort(
+    by = sum, 
+    at = "ASV_ID",
+    descending = TRUE  # Sort from most to least abundant
+  )
+
+
+
+# DEFINE THE ORDER OF YOUR SAMPLES IN THE GRAPH 
+x_levels <- c(
+  "NOTEMPLATE+", "02CONTROL+", "03CONTROL+", "04CONTROL+", "06CONTROL+", 
+  "07CONTROL+", "08CONTROL+", "09CONTROL+", "12CONTROL+", 
+  "02FR+", "02FL+", "02HR+", "02HL+",
+  "03FR+", "03FL+", "03HR+", "03HL+",
+  "04FR+", "04FL+", "04HR+", "04HL+",
+  "06FR+", "06FL+", "06HR+", "06HL+",
+  "07FR+", "07FL+", "07HR+", "07HL+",
+  "08FR+", "08FL+", "08HR+", "08HL+",
+  "09FR+", "09FL+", "09HR+", "09HL+",
+  "12FR+", "12FL+", "12HR+", "12HL+"
+)
+
+# SET UP THE BOX AREA FOR THE NEGATIVE CONTROLS
+start_level <- "NOTEMPLATE+"   # FIRST
+end_level   <- "12CONTROL+"   # LAST
+
+start_idx <- which(x_levels == start_level)
+end_idx   <- which(x_levels == end_level)
+
+# DEFINE THE BAR THICKNESS
+xmin_box <- start_idx - 0.5
+xmax_box <- end_idx   + 0.5
+
+# DEFINE THE BOX'S LINE
+ymin_box <- 0
+ymax_box <- 1.02
+
+#PLOT       
+p_avg_ASV5 <- plot_composition(ps25.ASV.rel.sorted, average_by = "Quarters") +
+  annotate("rect",
+           xmin = xmin_box, xmax = xmax_box,
+           ymin = ymin_box, ymax = ymax_box,
+           fill = NA,                
+           colour = "gold",   
+           size = 1.2) +            
+  guides(fill = guide_legend(ncol = 1)) + 
+  labs(x = NULL, y = "Relative abundance") +
+  scale_fill_manual("ASV-ID", values = rev(colorsASV)) + 
+  scale_x_discrete(limits = x_levels) +
+  coord_cartesian(ylim = c(0,1)) +   
+  theme_bw() + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) 
+
+p_avg_ASV5 
+
+
+
+
+
+# THRESHOLD 0.6
+
+#Load your data
+ps6.wPMA <- subset_samples(phyloseq_no_after6, Group == "Viable")
+
+# get relative abudance
+ps26.rel <- microbiome::transform(ps6.wPMA, "compositional")
+
+
+#ASV
+ps26.ASV.rel <- aggregate_rare(ps26.rel, level = "ASV_ID", detection = 0.01, prevalence = 0.1)
+
+ps26.ASV.rel <- prune_taxa(taxa_sums(ps26.ASV.rel) > (0.01 * sum(taxa_sums(ps26.ASV.rel))), ps26.ASV.rel)
+
+ps26.ASV.rel <- transform_sample_counts(ps26.ASV.rel, function(x) x / sum(x))
+
+
+table(taxa_sums(ps26.ASV.rel) > (0.01 * sum(taxa_sums(ps26.ASV.rel))))
+
+
+
+
+ps26.ASV.rel.sorted <- ps26.ASV.rel %>%
+  tax_sort(
+    by = sum, 
+    at = "ASV_ID",
+    descending = TRUE  # Sort from most to least abundant
+  )
+
+
+
+# DEFINE THE ORDER OF YOUR SAMPLES IN THE GRAPH 
+x_levels <- c(
+  "NOTEMPLATE+", "02CONTROL+", "03CONTROL+", "04CONTROL+", "06CONTROL+", 
+  "07CONTROL+", "08CONTROL+", "09CONTROL+", "12CONTROL+", 
+  "02FR+", "02FL+", "02HR+", "02HL+",
+  "03FR+", "03FL+", "03HR+", "03HL+",
+  "04FR+", "04FL+", "04HR+", "04HL+",
+  "06FR+", "06FL+", "06HR+", "06HL+",
+  "07FR+", "07FL+", "07HR+", "07HL+",
+  "08FR+", "08FL+", "08HR+", "08HL+",
+  "09FR+", "09FL+", "09HR+", "09HL+",
+  "12FR+", "12FL+", "12HR+", "12HL+"
+)
+
+# SET UP THE BOX AREA FOR THE NEGATIVE CONTROLS
+start_level <- "NOTEMPLATE+"   # FIRST
+end_level   <- "12CONTROL+"   # LAST
+
+start_idx <- which(x_levels == start_level)
+end_idx   <- which(x_levels == end_level)
+
+# DEFINE THE BAR THICKNESS
+xmin_box <- start_idx - 0.5
+xmax_box <- end_idx   + 0.5
+
+# DEFINE THE BOX'S LINE
+ymin_box <- 0
+ymax_box <- 1.02
+
+#PLOT
+p_avg_ASV6 <- plot_composition(ps26.ASV.rel.sorted, average_by = "Quarters") +
+  annotate("rect",
+           xmin = xmin_box, xmax = xmax_box,
+           ymin = ymin_box, ymax = ymax_box,
+           fill = NA,                
+           colour = "gold",  
+           size = 1.2) +            
+  guides(fill = guide_legend(ncol = 1)) + 
+  labs(x = NULL, y = "Relative abundance") +
+  scale_fill_manual("ASV-ID", values = rev(colorsASV)) + 
+  scale_x_discrete(limits = x_levels) +
+  coord_cartesian(ylim = c(0,1)) +   
+  theme_bw() + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) 
+
+p_avg_ASV6
+
+
+
+# THRESHOLD 0.8
+
+#Load your data
+ps8.wPMA <- subset_samples(phyloseq_no_after8, Group == "Viable")
+
+# get relative abudance
+ps28.rel <- microbiome::transform(ps8.wPMA, "compositional")
+
+
+#ASV
+ps28.ASV.rel <- aggregate_rare(ps28.rel, level = "ASV_ID", detection = 0.01, prevalence = 0.1)
+
+ps28.ASV.rel <- prune_taxa(taxa_sums(ps28.ASV.rel) > (0.01 * sum(taxa_sums(ps28.ASV.rel))), ps28.ASV.rel)
+
+ps28.ASV.rel <- transform_sample_counts(ps28.ASV.rel, function(x) x / sum(x))
+
+
+table(taxa_sums(ps28.ASV.rel) > (0.01 * sum(taxa_sums(ps28.ASV.rel))))
+
+
+
+
+
+ps28.ASV.rel.sorted <- ps28.ASV.rel %>%
+  tax_sort(
+    by = sum, 
+    at = "ASV_ID",
+    descending = TRUE  # Sort from most to least abundant
+  )
+
+
+
+# DEFINE THE ORDER OF YOUR SAMPLES IN THE GRAPH 
+x_levels <- c(
+  "NOTEMPLATE+", "02CONTROL+", "03CONTROL+", "04CONTROL+", "06CONTROL+", 
+  "07CONTROL+", "08CONTROL+", "09CONTROL+", "12CONTROL+", 
+  "02FR+", "02FL+", "02HR+", "02HL+",
+  "03FR+", "03FL+", "03HR+", "03HL+",
+  "04FR+", "04FL+", "04HR+", "04HL+",
+  "06FR+", "06FL+", "06HR+", "06HL+",
+  "07FR+", "07FL+", "07HR+", "07HL+",
+  "08FR+", "08FL+", "08HR+", "08HL+",
+  "09FR+", "09FL+", "09HR+", "09HL+",
+  "12FR+", "12FL+", "12HR+", "12HL+"
+)
+
+# SET UP THE BOX AREA FOR THE NEGATIVE CONTROLS
+start_level <- "NOTEMPLATE+"   # FIRST
+end_level   <- "12CONTROL+"   # LAST
+
+start_idx <- which(x_levels == start_level)
+end_idx   <- which(x_levels == end_level)
+
+# DEFINE THE BAR THICKNESS
+xmin_box <- start_idx - 0.5
+xmax_box <- end_idx   + 0.5
+
+# DEFINE THE BOX'S LINE
+ymin_box <- 0
+ymax_box <- 1.02
+
+#PLOT
+p_avg_ASV8 <- plot_composition(ps28.ASV.rel.sorted, average_by = "Quarters") +
+  annotate("rect",
+           xmin = xmin_box, xmax = xmax_box,
+           ymin = ymin_box, ymax = ymax_box,
+           fill = NA,                
+           colour = "gold",   
+           size = 1.2) +            
+  guides(fill = guide_legend(ncol = 1)) + 
+  labs(x = NULL, y = "Relative abundance") +
+  scale_fill_manual("ASV-ID", values = rev(colorsASV)) + 
+  scale_x_discrete(limits = x_levels) +
+  coord_cartesian(ylim = c(0,1)) +   
+  theme_bw() + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) 
+
+p_avg_ASV8 
+
+                                        
+
+#COMBINE THE GRAPHS - BEFORE AND THRESHOLD 0.8
+
+combined_ASV_plot <- ggarrange(
+  p_avg_ASV, 
+  p_avg_ASV8,
+  ncol = 1, nrow = 2,
+  labels = c("A", "B"),
+  common.legend = FALSE,
+  legend = "right"
+)
+
+combined_ASV_plot
+
+
+##COMBINE THE GRAPHS - THRESHOLD 0.5 AND THRESHOLD 0.6
+                                       
+combined_ASV_plot5 <- ggarrange(
+  p_avg_ASV5, 
+  p_avg_ASV6,
+  ncol = 1, nrow = 2,
+  labels = c("A", "B"),
+  common.legend = FALSE,
+  legend = "right"
+)
+
+combined_ASV_plot5  
+  
