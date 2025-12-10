@@ -1,86 +1,86 @@
-Sample-ID	Quarters	Group	Sample_or_control	quant_reading	SCC_1_average	SCC_2_average	SCC_1wb	SCC_1cw	SCC_1wa	SCC_2wb	SCC_2cw	SCC_2wa	Micro_10_average	Micro_100_average	Micro_10_wb	Micro_10_cw	Micro_10_wa	Micro_100_wb	Micro_100_cw	Micro_100_wa	culture	SCC_vs_culture
-#q2:types	categorical	categorical	categorical	Numeric	categorical	categorical	categorical	categorical	categorical	categorical	categorical	categorical	categorical	categorical	categorical	categorical	categorical	categorical	categorical	categorical	categorical	categorical
-1	02FR+	Viable	True_Sample	8.5	high	1	low	low	high	1	1	2	positive	positive	negative	positive	positive	positive	positive	positive	2	1
-2	02FL+	Viable	True_Sample	7.7	high	1	high	low	low	2	0	0	negative	negative	negative	negative	negative	negative	negative	negative	0	negative
-3	02HR+	Viable	True_Sample	12	low	0	low	low	low	1	0	0	positive	positive	negative	positive	negative	negative	positive	negative	1	negative
-4	02HL+	Viable	True_Sample	7.3	low	0	high	low	low	1	0	0	negative	negative	negative	negative	negative	negative	negative	negative	0	0
-5	02CONTROL+	Viable	NEG2	9.5	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	0	negative
-6	03FR+	Viable	True_Sample	5.4	low	0	low	low	low	0	1	0	negative	negative	negative	negative	negative	negative	negative	negative	0	0
-7	03FL+	Viable	True_Sample	7.1	low	0	low	low	low	0	0	0	negative	positive	negative	negative	negative	positive	negative	negative	0	0
-8	03HR+	Viable	True_Sample	6.8	high	1	high	low	low	2	0	0	negative	positive	negative	negative	negative	negative	negative	positive	0	negative
-9	03HL+	Viable	True_Sample	6.9	low	1	low	low	high	0	0	1	negative	positive	negative	negative	negative	negative	negative	positive	0	negative
-10	03CONTROL+	Viable	NEG2	8.1	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	0	negative
-11	04FR+	Viable	True_Sample	11.2	high	1	high	high	low	2	2	0	positive	positive	positive	positive	positive	positive	positive	positive	2	1
-12	04FL+	Viable	True_Sample	2.7	high	2	high	high	low	2	2	1	positive	positive	positive	negative	negative	positive	negative	negative	1	negative
-13	04HR+	Viable	True_Sample	5.5	high	2	low	high	high	0	2	1	positive	positive	negative	positive	negative	negative	positive	positive	1	1
-14	04HL+	Viable	True_Sample	9.9	high	2	high	high	high	2	2	2	positive	positive	positive	positive	negative	positive	positive	negative	2	1
-15	04CONTROL+	Viable	NEG2	3.6	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	0	negative
-16	06FR+	Viable	True_Sample	5.8	low	0	low	low	low	0	0	0	negative	positive	negative	negative	negative	negative	negative	positive	0	0
-17	06FL+	Viable	True_Sample	5.3	low	1	high	low	high	1	0	1	negative	positive	negative	negative	negative	positive	negative	positive	0	negative
-18	06HR+	Viable	True_Sample	3.8	low	1	low	high	low	1	1	0	positive	positive	negative	negative	positive	positive	positive	positive	1	negative
-19	06HL+	Viable	True_Sample	2.4	high	1	high	low	low	2	0	0	negative	positive	negative	negative	negative	positive	positive	positive	0	negative
-20	06CONTROL+	Viable	NEG2	1.5	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	0	negative
-21	07FR+	Viable	True_Sample	4.2	high	1	low	low	high	1	1	1	negative	positive	negative	negative	negative	positive	negative	positive	0	negative
-22	07FL+	Viable	True_Sample	3.9	high	1	high	high	low	1	1	1	positive	positive	negative	negative	positive	negative	positive	positive	1	negative
-23	07HR+	Viable	True_Sample	3.7	high	1	high	low	high	1	1	1	positive	positive	negative	negative	positive	negative	positive	positive	1	negative
-24	NOTEMPLATE+	Viable	NEG1	3.7	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	0	negative
-25	07HL+	Viable	True_Sample	1.1	low	1	low	low	low	1	1	0	negative	positive	negative	negative	negative	negative	positive	positive	0	negative
-26	07CONTROL+	Viable	NEG2	2.5	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	0	negative
-27	08FR+	Viable	True_Sample	1	low	0	low	low	low	1	0	0	positive	positive	negative	positive	positive	positive	positive	positive	2	negative
-28	08FL+	Viable	True_Sample	1	low	0	low	low	low	1	0	0	negative	negative	negative	negative	negative	negative	negative	negative	0	0
-29	08HR+	Viable	True_Sample	1	low	1	high	low	low	1	0	0	negative	negative	negative	negative	negative	negative	negative	negative	0	negative
-30	08HL+	Viable	True_Sample	1	high	1	low	high	high	1	1	1	positive	positive	negative	positive	negative	positive	positive	negative	1	negative
-31	08CONTROL+	Viable	NEG2	1.5	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	0	negative
-32	09FR+	Viable	True_Sample	1.7	low	0	low	low	low	0	0	0	negative	positive	negative	negative	negative	negative	negative	positive	0	0
-33	09FL+	Viable	True_Sample	1	low	0	low	low	low	1	0	0	positive	positive	positive	negative	negative	positive	negative	negative	1	negative
-34	09HR+	Viable	True_Sample	1.6	high	1	high	high	low	1	2	1	positive	positive	positive	negative	positive	positive	positive	positive	2	1
-35	09HL+	Viable	True_Sample	1.5	high	1	high	low	high	2	0	1	positive	positive	negative	negative	positive	negative	negative	positive	1	negative
-36	09CONTROL+	Viable	NEG2	1.3	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	0	negative
-37	12FR+	Viable	True_Sample	1.4	high	1	high	low	high	2	0	1	negative	positive	negative	negative	negative	positive	negative	negative	0	negative
-38	12FL+	Viable	True_Sample	1.3	high	1	high	low	high	1	0	2	positive	positive	positive	negative	negative	positive	positive	positive	1	negative
-39	12HR+	Viable	True_Sample	1	high	1	high	high	high	2	2	2	positive	positive	positive	positive	positive	positive	positive	positive	2	1
-40	12HL+	Viable	True_Sample	1	high	1	high	low	high	2	1	2	positive	positive	positive	negative	negative	positive	negative	negative	1	negative
-41	12CONTROL+	Viable	NEG2	1.5	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	0	negative
-261	02FR-	Total	True_Sample	12	high	1	low	low	high	1	1	2	positive	positive	negative	positive	positive	positive	positive	positive	2	1
-262	02FL-	Total	True_Sample	7.7	high	1	high	low	low	2	0	0	negative	negative	negative	negative	negative	negative	negative	negative	0	negative
-263	02HR-	Total	True_Sample	6.6	low	0	low	low	low	1	0	0	positive	positive	negative	positive	negative	negative	positive	negative	1	negative
-264	NOTEMPLATE-	Total	NEG1	3.2	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	0	negative
-265	02HL-	Total	True_Sample	2.9	low	0	high	low	low	1	0	0	negative	negative	negative	negative	negative	negative	negative	negative	0	0
-266	02CONTROL-	Total	NEG2	6.9	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	0	negative
-267	03FR-	Total	True_Sample	5.7	low	0	low	low	low	0	1	0	negative	negative	negative	negative	negative	negative	negative	negative	0	0
-268	03FL-	Total	True_Sample	5.8	low	0	low	low	low	0	0	0	negative	positive	negative	negative	negative	positive	negative	negative	0	0
-269	03HR-	Total	True_Sample	5.4	high	1	high	low	low	2	0	0	negative	positive	negative	negative	negative	negative	negative	positive	0	negative
-270	03HL-	Total	True_Sample	3.6	low	1	low	low	high	0	0	1	negative	positive	negative	negative	negative	negative	negative	positive	0	negative
-271	03CONTROL-	Total	NEG2	7.3	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	0	negative
-272	04FR-	Total	True_Sample	6	high	1	high	high	low	2	2	0	positive	positive	positive	positive	positive	positive	positive	positive	2	1
-273	04FL-	Total	True_Sample	20	high	2	high	high	low	2	2	1	positive	positive	positive	negative	negative	positive	negative	negative	1	negative
-274	04HR-	Total	True_Sample	1.1	high	2	low	high	high	0	2	1	positive	positive	negative	positive	negative	negative	positive	positive	1	1
-275	04HL-	Total	True_Sample	11	high	2	high	high	high	2	2	2	positive	positive	positive	positive	negative	positive	positive	negative	2	1
-276	04CONTROL-	Total	NEG2	8.1	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	0	negative
-277	06FR-	Total	True_Sample	1.1	low	0	low	low	low	0	0	0	negative	positive	negative	negative	negative	negative	negative	positive	0	0
-278	06FL-	Total	True_Sample	2.2	low	1	high	low	high	1	0	1	negative	positive	negative	negative	negative	positive	negative	positive	0	negative
-279	06HR-	Total	True_Sample	6.1	low	1	low	high	low	1	1	0	positive	positive	negative	negative	positive	positive	positive	positive	1	negative
-280	06HL-	Total	True_Sample	1.3	high	1	high	low	low	2	0	0	negative	positive	negative	negative	negative	positive	positive	positive	0	negative
-281	06CONTROL-	Total	NEG2	8.1	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	0	negative
-282	07FR-	Total	True_Sample	15.6	high	1	low	low	high	1	1	1	negative	positive	negative	negative	negative	positive	negative	positive	0	negative
-283	07FL-	Total	True_Sample	3.4	high	1	high	high	low	1	1	1	positive	positive	negative	negative	positive	negative	positive	positive	1	negative
-284	07HR-	Total	True_Sample	7.2	high	1	high	low	high	1	1	1	positive	positive	negative	negative	positive	negative	positive	positive	1	negative
-285	07HL-	Total	True_Sample	3.5	low	1	low	low	low	1	1	0	negative	positive	negative	negative	negative	negative	positive	positive	0	negative
-286	07CONTROL-	Total	NEG2	11	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	0	negative
-287	08FR-	Total	True_Sample	2.3	low	0	low	low	low	1	0	0	positive	positive	negative	positive	positive	positive	positive	positive	2	negative
-288	NOTEMPLATE1-	Total	NEG1	2.2	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	0	negative
-289	08FL-	Total	True_Sample	1	low	0	low	low	low	1	0	0	negative	negative	negative	negative	negative	negative	negative	negative	0	0
-290	08HR-	Total	True_Sample	1.9	low	1	high	low	low	1	0	0	negative	negative	negative	negative	negative	negative	negative	negative	0	negative
-291	08HL-	Total	True_Sample	2.2	high	1	low	high	high	1	1	1	positive	positive	negative	positive	negative	positive	positive	negative	1	negative
-292	08CONTROL-	Total	NEG2	6	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	0	negative
-293	09FR-	Total	True_Sample	1	low	0	low	low	low	0	0	0	negative	positive	negative	negative	negative	negative	negative	positive	0	0
-294	09FL-	Total	True_Sample	1	low	0	low	low	low	1	0	0	positive	positive	positive	negative	negative	positive	negative	negative	1	negative
-295	09HR-	Total	True_Sample	2.2	high	1	high	high	low	1	2	1	positive	positive	positive	negative	positive	positive	positive	positive	2	1
-296	09HL-	Total	True_Sample	1	high	1	high	low	high	2	0	1	positive	positive	negative	negative	positive	negative	negative	positive	1	negative
-297	09CONTROL-	Total	NEG2	5.2	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	0	negative
-298	12FR-	Total	True_Sample	3.9	high	1	high	low	high	2	0	1	negative	positive	negative	negative	negative	positive	negative	negative	0	negative
-299	12FL-	Total	True_Sample	3	high	1	high	low	high	1	0	2	positive	positive	positive	negative	negative	positive	positive	positive	1	negative
-300	12HR-	Total	True_Sample	1	high	1	high	high	high	2	2	2	positive	positive	positive	positive	positive	positive	positive	positive	2	1
-301	12HL-	Total	True_Sample	4	high	1	high	low	high	2	1	2	positive	positive	positive	negative	negative	positive	negative	negative	1	negative
-302	12CONTROL-	Total	NEG2	6.6	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	0	negative
-303	NOTEMPLATE2-	Total	NEG1	1	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	negative	0	negative
+Sample-ID	Quarters	Group	Sample_or_control	quant_reading
+#q2:types	categorical	categorical	categorical	Numeric
+1	02FR+	Viable	True_Sample	8.5
+2	02FL+	Viable	True_Sample	7.7
+3	02HR+	Viable	True_Sample	12
+4	02HL+	Viable	True_Sample	7.3
+5	02CONTROL+	Viable	NEG2	9.5
+6	03FR+	Viable	True_Sample	5.4
+7	03FL+	Viable	True_Sample	7.1
+8	03HR+	Viable	True_Sample	6.8
+9	03HL+	Viable	True_Sample	6.9
+10	03CONTROL+	Viable	NEG2	8.1
+11	04FR+	Viable	True_Sample	11.2
+12	04FL+	Viable	True_Sample	2.7
+13	04HR+	Viable	True_Sample	5.5
+14	04HL+	Viable	True_Sample	9.9
+15	04CONTROL+	Viable	NEG2	3.6
+16	06FR+	Viable	True_Sample	5.8
+17	06FL+	Viable	True_Sample	5.3
+18	06HR+	Viable	True_Sample	3.8
+19	06HL+	Viable	True_Sample	2.4
+20	06CONTROL+	Viable	NEG2	1.5
+21	07FR+	Viable	True_Sample	4.2
+22	07FL+	Viable	True_Sample	3.9
+23	07HR+	Viable	True_Sample	3.7
+24	NOTEMPLATE+	Viable	NEG1	3.7
+25	07HL+	Viable	True_Sample	1.1
+26	07CONTROL+	Viable	NEG2	2.5
+27	08FR+	Viable	True_Sample	1
+28	08FL+	Viable	True_Sample	1
+29	08HR+	Viable	True_Sample	1
+30	08HL+	Viable	True_Sample	1
+31	08CONTROL+	Viable	NEG2	1.5
+32	09FR+	Viable	True_Sample	1.7
+33	09FL+	Viable	True_Sample	1
+34	09HR+	Viable	True_Sample	1.6
+35	09HL+	Viable	True_Sample	1.5
+36	09CONTROL+	Viable	NEG2	1.3
+37	12FR+	Viable	True_Sample	1.4
+38	12FL+	Viable	True_Sample	1.3
+39	12HR+	Viable	True_Sample	1
+40	12HL+	Viable	True_Sample	1
+41	12CONTROL+	Viable	NEG2	1.5
+261	02FR-	Total	True_Sample	12
+262	02FL-	Total	True_Sample	7.7
+263	02HR-	Total	True_Sample	6.6
+264	NOTEMPLATE-	Total	NEG1	3.2
+265	02HL-	Total	True_Sample	2.9
+266	02CONTROL-	Total	NEG2	6.9
+267	03FR-	Total	True_Sample	5.7
+268	03FL-	Total	True_Sample	5.8
+269	03HR-	Total	True_Sample	5.4
+270	03HL-	Total	True_Sample	3.6
+271	03CONTROL-	Total	NEG2	7.3
+272	04FR-	Total	True_Sample	6
+273	04FL-	Total	True_Sample	20
+274	04HR-	Total	True_Sample	1.1
+275	04HL-	Total	True_Sample	11
+276	04CONTROL-	Total	NEG2	8.1
+277	06FR-	Total	True_Sample	1.1
+278	06FL-	Total	True_Sample	2.2
+279	06HR-	Total	True_Sample	6.1
+280	06HL-	Total	True_Sample	1.3
+281	06CONTROL-	Total	NEG2	8.1
+282	07FR-	Total	True_Sample	15.6
+283	07FL-	Total	True_Sample	3.4
+284	07HR-	Total	True_Sample	7.2
+285	07HL-	Total	True_Sample	3.5
+286	07CONTROL-	Total	NEG2	11
+287	08FR-	Total	True_Sample	2.3
+288	NOTEMPLATE1-	Total	NEG1	2.2
+289	08FL-	Total	True_Sample	1
+290	08HR-	Total	True_Sample	1.9
+291	08HL-	Total	True_Sample	2.2
+292	08CONTROL-	Total	NEG2	6
+293	09FR-	Total	True_Sample	1
+294	09FL-	Total	True_Sample	1
+295	09HR-	Total	True_Sample	2.2
+296	09HL-	Total	True_Sample	1
+297	09CONTROL-	Total	NEG2	5.2
+298	12FR-	Total	True_Sample	3.9
+299	12FL-	Total	True_Sample	3
+300	12HR-	Total	True_Sample	1
+301	12HL-	Total	True_Sample	4
+302	12CONTROL-	Total	NEG2	6.6
+303	NOTEMPLATE2-	Total	NEG1	1
