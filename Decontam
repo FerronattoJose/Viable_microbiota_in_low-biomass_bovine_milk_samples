@@ -342,46 +342,33 @@ write.table(t(otu_table(phyloseq_no_after8)),
 
 # THRESHOLD 0.5 - CREATE A PHYLOSEQ ONLY WITH THE TRUE_SAMPLE AND WITHOUT CONTAMINANTS
 
-goodTaxa <- setdiff(taxa_names(phyloseq_no_after5), badTaxa.5)
-phyloseq_no_after5
-phyloseq_no_after5 <- prune_taxa(goodTaxa, phyloseq_no_after5)
-phyloseq_no_after5
-phyloseq_after5_withoutneg = subset_samples(phyloseq_no_after5, Sample_or_control %in% c("True_Sample"))
+ps5.cleaned05 <- prune_taxa(!(contam.freq5$contaminant | contamdf.prev05$contaminant | contamdf.prev05.2$contaminant),ps5)
+phyloseq_after5_withoutneg = subset_samples(ps5.cleaned05, Sample_or_control %in% c("True_Sample"))
 phyloseq_after5_withoutneg
 
-#Removed 254 ASVs
+#Removed 253 ASVs
 
 saveRDS(phyloseq_no_after5, "phyloseqafter.5_SILVA_138.2")
 
 
 # THRESHOLD 0.6 - CREATE A PHYLOSEQ ONLY WITH THE TRUE_SAMPLE AND WITHOUT CONTAMINANTS
 
-goodTaxa <- setdiff(taxa_names(phyloseq_no_after6), badTaxa.6)
-phyloseq_no_after6
-phyloseq_no_after6 <- prune_taxa(goodTaxa, phyloseq_no_after6)
-phyloseq_no_after6
-phyloseq_after6_withoutneg = subset_samples(phyloseq_no_after6, Sample_or_control %in% c("True_Sample"))
+ps6.cleaned06 <- prune_taxa(!(contam.freq6$contaminant | contamdf.prev06$contaminant | contamdf.prev06.2$contaminant), ps6)
+phyloseq_after6_withoutneg = subset_samples(ps6.cleaned06, Sample_or_control %in% c("True_Sample"))
 phyloseq_after6_withoutneg
 
-#Removed 367 ASVs
+#Removed 366 ASVs
 
 saveRDS(phyloseq_no_after6, "phyloseqafter.6_SILVA_138.2")
 
 
 # THRESHOLD 0.8 - CREATE A PHYLOSEQ ONLY WITH THE TRUE_SAMPLE AND WITHOUT CONTAMINANTS
 
-remove_contaminants <- function(phyloseq_object, bad_taxa) {
-  good_taxa <- setdiff(taxa_names(phyloseq_object), bad_taxa)
-  return(prune_taxa(good_taxa, phyloseq_object))
-}
-
-phyloseq_no_after8 <- remove_contaminants(phyloseq_no_after8, badTaxa.8)
-phyloseq_no_after8 <- remove_contaminants(phyloseq_no_after8, badTaxa.8.1)
-print(phyloseq_no_after8)
-phyloseq_after8_withoutneg = subset_samples(phyloseq_no_after8, Sample_or_control %in% c("True_Sample"))
+ps8.cleaned08 <- prune_taxa(!(contam.freq8$contaminant | contamdf.prev08$contaminant | contamdf.prev08.2$contaminant), ps8)
+phyloseq_after8_withoutneg = subset_samples(ps8.cleaned08, Sample_or_control %in% c("True_Sample"))
 phyloseq_after8_withoutneg
 
-#Removed 386 ASVs
+#Removed 382 ASVs
 
 saveRDS(phyloseq_no_after8, "phyloseqafter.8_SILVA_138.2")
 
